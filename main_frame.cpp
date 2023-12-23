@@ -5,32 +5,38 @@
 #include <wx/wfstream.h>
 #include "constants.hpp"
 #include "FindDialog.hpp"
+#include <wx/filename.h>
+#include <wx/timer.h>
 
 class app : public wxApp
 {
-    public:
-        bool OnInit() override;
+public:
+    bool OnInit() override;
 };
 
 class main_editor_frame : public wxFrame
 {
-    private:
-        wxStyledTextCtrl *editor;
-        wxButton *saveButton;
-        wxButton *openButton;
-        wxButton *newFileButton;
-        wxButton *toggleDarkModeButton;
-        wxButton *findButton;
-        wxButton *replaceButton;
-    public:
-        main_editor_frame(const wxString &title, const wxPoint &pos, const wxSize &size);
-        void OnSave(wxCommandEvent &event);
-        void OnOpen(wxCommandEvent &event);
-        void OnNewFile(wxCommandEvent &event);
-        void OnToggleDarkMode(wxCommandEvent &event);
-        void ApplyEditorStyles(bool isDarkMode);
-        void OnFind(wxCommandEvent &event);
-        void OnReplace(wxCommandEvent &event);
+private:
+    wxStyledTextCtrl *editor;
+    wxButton *saveButton;
+    wxButton *openButton;
+    wxButton *newFileButton;
+    wxButton *toggleDarkModeButton;
+    wxButton *findButton;
+    wxButton *replaceButton;
+    wxTimer m_timer;
+    wxDECLARE_EVENT_TABLE();
+public:
+    main_editor_frame(const wxString &title, const wxPoint &pos, const wxSize &size);
+    void OnSave(wxCommandEvent &event);
+    void OnOpen(wxCommandEvent &event);
+    void OnNewFile(wxCommandEvent &event);
+    void OnToggleDarkMode(wxCommandEvent &event);
+    void ApplyEditorStyles(bool isDarkMode);
+    void OnFind(wxCommandEvent &event);
+    void OnReplace(wxCommandEvent &event);
+    void OnEditorUpdate(wxStyledTextEvent& event);
+    void OnTimer(wxTimerEvent& event);
 };
 
 wxIMPLEMENT_APP(app);
@@ -44,8 +50,13 @@ bool app::OnInit()
 }
 
 main_editor_frame::main_editor_frame(const wxString& title, const wxPoint& pos, const wxSize& size)
-                            :wxFrame(nullptr, wxID_ANY, title, pos, size)
+        :wxFrame(nullptr, wxID_ANY, title, pos, size), m_timer(this)
 {
+    CreateStatusBar(3);
+    SetStatusText("Ready", 0);
+    SetStatusText("Line: 1, Col: 1", 1);
+    m_timer.Start(1000);
+
     auto* vbox = new wxBoxSizer(wxVERTICAL);
     saveButton = new wxButton(this, wxID_ANY, Constants::SAVE_BUTTON_LABEL, Constants::SAVE_BUTTON_POSITION, wxDefaultSize);
     openButton = new wxButton(this, wxID_ANY, Constants::OPEN_BUTTON_LABEL, Constants::OPEN_BUTTON_POSITION, wxDefaultSize);
@@ -61,6 +72,9 @@ main_editor_frame::main_editor_frame(const wxString& title, const wxPoint& pos, 
     findButton-> Bind(wxEVT_BUTTON, &main_editor_frame::OnFind, this);
     replaceButton -> Bind(wxEVT_BUTTON, &main_editor_frame::OnReplace, this);
 
+    editor = new wxStyledTextCtrl(this, wxID_ANY);
+    editor->Bind(wxEVT_STC_UPDATEUI, &main_editor_frame::OnEditorUpdate, this);
+
     auto* hbox = new wxBoxSizer(wxHORIZONTAL);
     hbox->Add(saveButton);
     hbox->Add(openButton);
@@ -70,7 +84,6 @@ main_editor_frame::main_editor_frame(const wxString& title, const wxPoint& pos, 
     hbox->Add(replaceButton);
 
     vbox->Add(hbox,0,wxEXPAND | wxALL, 5);
-    editor = new wxStyledTextCtrl(this, wxID_ANY);
     editor->SetLexer(Constants::LEXER_CPP);
 
     editor->StyleSetForeground(wxSTC_C_STRING       , Constants::COLOR_STRING);
@@ -117,11 +130,11 @@ main_editor_frame::main_editor_frame(const wxString& title, const wxPoint& pos, 
 void main_editor_frame::OnSave(wxCommandEvent &event)
 {
     wxFileDialog saveFileDialog
-    (
-    this, _("Save File"), "", "",
-         "Text Files (*.txt)|*.txt|All files (*.*)|*.*",
-         wxFD_SAVE | wxFD_OVERWRITE_PROMPT
-    );
+            (
+                    this, _("Save File"), "", "",
+                    "Text Files (*.txt)|*.txt|All files (*.*)|*.*",
+                    wxFD_SAVE | wxFD_OVERWRITE_PROMPT
+            );
 
     if(saveFileDialog.ShowModal() == wxID_CANCEL)
     {
@@ -131,16 +144,19 @@ void main_editor_frame::OnSave(wxCommandEvent &event)
     {
         wxLogError("Cannot save current contents in file '%s'.", saveFileDialog.GetPath());
     }
+
+    wxFileName fileName(saveFileDialog.GetPath());
+    SetStatusText(fileName.GetFullName(), 0);
 }
 
 void main_editor_frame::OnOpen(wxCommandEvent &event)
 {
     wxFileDialog openFileDialog
-    (
-     this, _("Open file"), "", "",
-    "Text Files (*.txt)|*.txt|All files (*.*)|*.*",
-     wxFD_OPEN|wxFD_FILE_MUST_EXIST
-    );
+            (
+                    this, _("Open file"), "", "",
+                    "Text Files (*.txt)|*.txt|All files (*.*)|*.*",
+                    wxFD_OPEN|wxFD_FILE_MUST_EXIST
+            );
 
     if(openFileDialog.ShowModal() == wxID_CANCEL)
     {
@@ -154,11 +170,27 @@ void main_editor_frame::OnOpen(wxCommandEvent &event)
         return;
     }
     editor->LoadFile(openFileDialog.GetPath());
+    wxFileName fileName(openFileDialog.GetPath());
+    SetStatusText(fileName.GetFullName(), 0);
 }
 
 void main_editor_frame::OnNewFile(wxCommandEvent& event)
 {
+    if (editor->GetModify()) {
+        wxMessageDialog confirmDialog(this, _("Do you want to save changes to the current document?"), _("Confirm"), wxYES_NO | wxCANCEL | wxICON_QUESTION);
+        int response = confirmDialog.ShowModal();
+
+        if (response == wxID_YES) {
+            OnSave(event);
+        } else if (response == wxID_CANCEL) {
+            return;
+        }
+    }
+
     editor->ClearAll();
+    editor->EmptyUndoBuffer();
+    SetTitle("wx-editor - New File");
+
 }
 
 void main_editor_frame::OnToggleDarkMode(wxCommandEvent& event)
@@ -206,7 +238,7 @@ void main_editor_frame::ApplyEditorStyles(bool isDarkMode)
 
 void main_editor_frame::OnFind(wxCommandEvent &event)
 {
-    FindDialog* findDialog = new FindDialog(this, editor);
+    auto* findDialog = new FindDialog(this, editor);
     findDialog->Show(true);
 }
 
@@ -230,3 +262,24 @@ void main_editor_frame::OnReplace(wxCommandEvent &event)
         }
     }
 }
+
+void main_editor_frame::OnEditorUpdate(wxStyledTextEvent& event)
+{
+    int line = editor->GetCurrentLine() + 1;
+    int col = editor->GetColumn(editor->GetCurrentPos() + 1);
+
+    wxString status;
+    status << "Line: " << line << ", Col: " << col;
+    SetStatusText(status, 1);
+}
+
+void main_editor_frame::OnTimer(wxTimerEvent& event)
+{
+    wxDateTime now = wxDateTime::Now();
+    wxString timeString = now.Format("%H:%M:%S");
+    SetStatusText(timeString, 2);
+}
+
+wxBEGIN_EVENT_TABLE(main_editor_frame, wxFrame)
+                EVT_TIMER(wxID_ANY, main_editor_frame::OnTimer)
+wxEND_EVENT_TABLE()
