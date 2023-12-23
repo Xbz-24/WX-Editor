@@ -3,6 +3,10 @@
 ## Overview
 wxEditor is a lightweight, cross-platform text editor designed for basic code editing. It is built using the wxWidgets framework to provide a native look and feel on each platform.
 
+
+![image](https://github.com/Xbz-24/editor-wx/assets/68678258/75d73f0c-b439-43f0-a2fd-811c355a2e3c)
+
+
 ## Features
 - Basic text editing capabilities
 - Syntax highlighting for C++
