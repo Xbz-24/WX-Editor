@@ -1,5 +1,4 @@
 #include <wx/wx.h>
-#include <wx/textctrl.h>
 #include <wx/stc/stc.h>
 #include <wx/button.h>
 #include <wx/wfstream.h>
@@ -26,6 +25,9 @@ private:
     wxButton *replaceButton;
     wxTimer m_timer;
     wxDECLARE_EVENT_TABLE();
+    wxButton *zoomInButton;
+    wxButton *zoomOutButton;
+    static const int ZOOM_INCREMENT = 3;
 public:
     main_editor_frame(const wxString &title, const wxPoint &pos, const wxSize &size);
     void OnSave(wxCommandEvent &event);
@@ -37,6 +39,8 @@ public:
     void OnReplace(wxCommandEvent &event);
     void OnEditorUpdate(wxStyledTextEvent& event);
     void OnTimer(wxTimerEvent& event);
+    void OnZoomIn(wxCommandEvent &event);
+    void OnZoomOut(wxCommandEvent &event);
 };
 
 wxIMPLEMENT_APP(app);
@@ -53,7 +57,7 @@ main_editor_frame::main_editor_frame(const wxString& title, const wxPoint& pos, 
         :wxFrame(nullptr, wxID_ANY, title, pos, size), m_timer(this)
 {
     CreateStatusBar(3);
-    SetStatusText("Ready", 0);
+    ;SetStatusText("Ready", 0);
     SetStatusText("Line: 1, Col: 1", 1);
     m_timer.Start(1000);
 
@@ -64,6 +68,8 @@ main_editor_frame::main_editor_frame(const wxString& title, const wxPoint& pos, 
     toggleDarkModeButton = new wxButton(this, wxID_ANY, "Toggle Dark Mode");
     findButton = new wxButton(this, wxID_ANY, "Find");
     replaceButton = new wxButton(this, wxID_ANY, "Replace");
+    zoomInButton = new wxButton(this, wxID_ANY, "+");
+    zoomOutButton = new wxButton(this, wxID_ANY, "-");
 
     saveButton -> Bind(wxEVT_BUTTON, &main_editor_frame::OnSave, this);
     openButton -> Bind(wxEVT_BUTTON, &main_editor_frame::OnOpen, this);
@@ -71,6 +77,8 @@ main_editor_frame::main_editor_frame(const wxString& title, const wxPoint& pos, 
     toggleDarkModeButton -> Bind(wxEVT_BUTTON, &main_editor_frame::OnToggleDarkMode, this);
     findButton-> Bind(wxEVT_BUTTON, &main_editor_frame::OnFind, this);
     replaceButton -> Bind(wxEVT_BUTTON, &main_editor_frame::OnReplace, this);
+    zoomInButton -> Bind(wxEVT_BUTTON, &main_editor_frame::OnZoomIn, this);
+    zoomOutButton -> Bind(wxEVT_BUTTON, &main_editor_frame::OnZoomOut, this);
 
     editor = new wxStyledTextCtrl(this, wxID_ANY);
     editor->Bind(wxEVT_STC_UPDATEUI, &main_editor_frame::OnEditorUpdate, this);
@@ -82,6 +90,8 @@ main_editor_frame::main_editor_frame(const wxString& title, const wxPoint& pos, 
     hbox->Add(toggleDarkModeButton);
     hbox->Add(findButton);
     hbox->Add(replaceButton);
+    hbox->Add(zoomInButton);
+    hbox->Add(zoomOutButton);
 
     vbox->Add(hbox,0,wxEXPAND | wxALL, 5);
     editor->SetLexer(Constants::LEXER_CPP);
@@ -130,11 +140,11 @@ main_editor_frame::main_editor_frame(const wxString& title, const wxPoint& pos, 
 void main_editor_frame::OnSave(wxCommandEvent &event)
 {
     wxFileDialog saveFileDialog
-            (
-                    this, _("Save File"), "", "",
-                    "Text Files (*.txt)|*.txt|All files (*.*)|*.*",
-                    wxFD_SAVE | wxFD_OVERWRITE_PROMPT
-            );
+    (
+    this, _("Save File"), "", "",
+    "Text Files (*.txt)|*.txt|All files (*.*)|*.*",
+    wxFD_SAVE | wxFD_OVERWRITE_PROMPT
+    );
 
     if(saveFileDialog.ShowModal() == wxID_CANCEL)
     {
@@ -203,7 +213,6 @@ void main_editor_frame::OnToggleDarkMode(wxCommandEvent& event)
 void main_editor_frame::ApplyEditorStyles(bool isDarkMode)
 {
     Constants::ThemeSettings theme = Constants::GetThemeSettings(isDarkMode);
-
     editor->StyleClearAll();
 
     editor->SetLexer(Constants::LEXER_CPP);
@@ -283,3 +292,15 @@ void main_editor_frame::OnTimer(wxTimerEvent& event)
 wxBEGIN_EVENT_TABLE(main_editor_frame, wxFrame)
                 EVT_TIMER(wxID_ANY, main_editor_frame::OnTimer)
 wxEND_EVENT_TABLE()
+
+void main_editor_frame::OnZoomIn(wxCommandEvent &event)
+{
+    int currentZoom = editor->GetZoom();
+    editor->SetZoom(currentZoom + ZOOM_INCREMENT);
+
+}
+void main_editor_frame::OnZoomOut(wxCommandEvent &event)
+{
+    int currentZoom = editor->GetZoom();
+    editor->SetZoom(currentZoom - ZOOM_INCREMENT);
+}
