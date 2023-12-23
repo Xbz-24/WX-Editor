@@ -352,9 +352,13 @@ void main_editor_frame::OnMarginLeftDown(wxMouseEvent& event)
 {
     int x = event.GetX();
     int marginWidth = editor->GetMarginWidth(0);
-    if (x >= marginWidth - 5 && x <= marginWidth + 5) {
+    if (!m_draggingMargin && x >= marginWidth - 12 && x <= marginWidth + 12)
+    {
         m_draggingMargin = true;
-        editor->CaptureMouse();
+        if (wxWindow::GetCapture() != editor)
+        {
+            editor->CaptureMouse();
+        }
         editor->SetCursor(wxCursor(wxCURSOR_SIZEWE));
     }
     event.Skip();
@@ -362,9 +366,10 @@ void main_editor_frame::OnMarginLeftDown(wxMouseEvent& event)
 
 void main_editor_frame::OnMarginLeftUp(wxMouseEvent& event)
 {
-    if(m_draggingMargin ){
+    if(m_draggingMargin){
         m_draggingMargin = false;
-        if(editor->HasCapture()){
+        if(editor->HasCapture())
+        {
             editor->ReleaseMouse();
         }
         editor->SetCursor(wxNullCursor);
@@ -376,7 +381,8 @@ void main_editor_frame::OnMarginMotion(wxMouseEvent& event)
 {
     int x = event.GetX();
     int marginWidth = editor->GetMarginWidth(0);
-    if (x >= marginWidth -12 && x <= marginWidth + 12)
+
+    if (x >= marginWidth - 12 && x <= marginWidth + 12)
     {
         editor->SetCursor(wxCursor(wxCURSOR_SIZEWE));
     }
@@ -385,10 +391,12 @@ void main_editor_frame::OnMarginMotion(wxMouseEvent& event)
         editor->SetCursor(wxNullCursor);
     }
 
-    if(m_draggingMargin && event.Dragging()){
-        int newWidth = std::max(0,x);
+    if (m_draggingMargin && event.Dragging())
+    {
+        int newWidth = std::max(0, x);
         editor->SetMarginWidth(0, newWidth);
     }
+
     event.Skip();
 }
 
