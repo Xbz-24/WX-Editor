@@ -4,6 +4,7 @@
 #include <wx/button.h>
 #include <wx/wfstream.h>
 #include "constants.hpp"
+#include "FindDialog.hpp"
 
 class app : public wxApp
 {
@@ -11,26 +12,25 @@ class app : public wxApp
         bool OnInit() override;
 };
 
-class main_editor_frame : public wxFrame {
-private:
-    wxStyledTextCtrl *editor;
-    wxButton *saveButton;
-    wxButton *openButton;
-    wxButton *newFileButton;
-    wxButton *toggleDarkModeButton;
-
-public:
-    main_editor_frame(const wxString &title, const wxPoint &pos, const wxSize &size);
-
-    void OnSave(wxCommandEvent &event);
-
-    void OnOpen(wxCommandEvent &event);
-
-    void OnNewFile(wxCommandEvent &event);
-
-    void OnToggleDarkMode(wxCommandEvent &event);
-
-    void ApplyEditorStyles(bool isDarkMode);
+class main_editor_frame : public wxFrame
+{
+    private:
+        wxStyledTextCtrl *editor;
+        wxButton *saveButton;
+        wxButton *openButton;
+        wxButton *newFileButton;
+        wxButton *toggleDarkModeButton;
+        wxButton *findButton;
+        wxButton *replaceButton;
+    public:
+        main_editor_frame(const wxString &title, const wxPoint &pos, const wxSize &size);
+        void OnSave(wxCommandEvent &event);
+        void OnOpen(wxCommandEvent &event);
+        void OnNewFile(wxCommandEvent &event);
+        void OnToggleDarkMode(wxCommandEvent &event);
+        void ApplyEditorStyles(bool isDarkMode);
+        void OnFind(wxCommandEvent &event);
+        void OnReplace(wxCommandEvent &event);
 };
 
 wxIMPLEMENT_APP(app);
@@ -47,26 +47,30 @@ main_editor_frame::main_editor_frame(const wxString& title, const wxPoint& pos, 
                             :wxFrame(nullptr, wxID_ANY, title, pos, size)
 {
     auto* vbox = new wxBoxSizer(wxVERTICAL);
-
     saveButton = new wxButton(this, wxID_ANY, Constants::SAVE_BUTTON_LABEL, Constants::SAVE_BUTTON_POSITION, wxDefaultSize);
     openButton = new wxButton(this, wxID_ANY, Constants::OPEN_BUTTON_LABEL, Constants::OPEN_BUTTON_POSITION, wxDefaultSize);
     newFileButton = new wxButton(this, wxID_ANY, "New File");
     toggleDarkModeButton = new wxButton(this, wxID_ANY, "Toggle Dark Mode");
+    findButton = new wxButton(this, wxID_ANY, "Find");
+    replaceButton = new wxButton(this, wxID_ANY, "Replace");
 
     saveButton -> Bind(wxEVT_BUTTON, &main_editor_frame::OnSave, this);
     openButton -> Bind(wxEVT_BUTTON, &main_editor_frame::OnOpen, this);
     newFileButton -> Bind(wxEVT_BUTTON, &main_editor_frame::OnNewFile, this);
     toggleDarkModeButton -> Bind(wxEVT_BUTTON, &main_editor_frame::OnToggleDarkMode, this);
+    findButton-> Bind(wxEVT_BUTTON, &main_editor_frame::OnFind, this);
+    replaceButton -> Bind(wxEVT_BUTTON, &main_editor_frame::OnReplace, this);
 
     auto* hbox = new wxBoxSizer(wxHORIZONTAL);
     hbox->Add(saveButton);
     hbox->Add(openButton);
     hbox->Add(newFileButton);
     hbox->Add(toggleDarkModeButton);
+    hbox->Add(findButton);
+    hbox->Add(replaceButton);
 
     vbox->Add(hbox,0,wxEXPAND | wxALL, 5);
     editor = new wxStyledTextCtrl(this, wxID_ANY);
-
     editor->SetLexer(Constants::LEXER_CPP);
 
     editor->StyleSetForeground(wxSTC_C_STRING       , Constants::COLOR_STRING);
@@ -198,4 +202,31 @@ void main_editor_frame::ApplyEditorStyles(bool isDarkMode)
     }
     editor->Refresh();
     editor->Update();
+}
+
+void main_editor_frame::OnFind(wxCommandEvent &event)
+{
+    FindDialog* findDialog = new FindDialog(this, editor);
+    findDialog->Show(true);
+}
+
+void main_editor_frame::OnReplace(wxCommandEvent &event)
+{
+    wxString findTerm = wxGetTextFromUser(_("Enter text to find:"), _("Replace"));
+    wxString replaceTerm = wxGetTextFromUser(_("Enter replacement text:"), _("Replace With"));
+    if(!findTerm.IsEmpty() && !replaceTerm.IsEmpty())
+    {
+        int start = 0;
+        int end = editor->GetTextLength();
+        editor->SetTargetStart(start);
+        editor->SetTargetEnd(end);
+        while(editor->SearchInTarget(findTerm) != -1)
+        {
+            editor -> ReplaceTarget(replaceTerm);
+            start = editor -> GetTargetEnd();
+            if(start >= end) break;
+            editor -> SetTargetStart(start);
+            editor -> SetTargetEnd(end);
+        }
+    }
 }
