@@ -41,6 +41,8 @@ public:
     void OnTimer(wxTimerEvent& event);
     void OnZoomIn(wxCommandEvent &event);
     void OnZoomOut(wxCommandEvent &event);
+    static void SaveLastFilePath(const wxString& path);
+    static wxString LoadLastFilePath();
 };
 
 wxIMPLEMENT_APP(app);
@@ -57,7 +59,7 @@ main_editor_frame::main_editor_frame(const wxString& title, const wxPoint& pos, 
         :wxFrame(nullptr, wxID_ANY, title, pos, size), m_timer(this)
 {
     CreateStatusBar(3);
-    ;SetStatusText("Ready", 0);
+    SetStatusText("Ready", 0);
     SetStatusText("Line: 1, Col: 1", 1);
     m_timer.Start(1000);
 
@@ -82,6 +84,7 @@ main_editor_frame::main_editor_frame(const wxString& title, const wxPoint& pos, 
 
     editor = new wxStyledTextCtrl(this, wxID_ANY);
     editor->Bind(wxEVT_STC_UPDATEUI, &main_editor_frame::OnEditorUpdate, this);
+    editor->SetZoom(100);
 
     auto* hbox = new wxBoxSizer(wxHORIZONTAL);
     hbox->Add(saveButton);
@@ -132,9 +135,19 @@ main_editor_frame::main_editor_frame(const wxString& title, const wxPoint& pos, 
 
     editor->AutoCompShow(0, Constants::AUTO_COMP_KEYWORDS);
 
+
+    wxString lastFilePath = LoadLastFilePath();
+    if(wxFileExists(lastFilePath))
+    {
+        editor->LoadFile(lastFilePath);
+        SetStatusText(wxFileNameFromPath(lastFilePath), 0);
+    }
+
+
     vbox->Add(editor,1, wxEXPAND);
     this->SetSizer(vbox);
     this->Layout();
+
 }
 
 void main_editor_frame::OnSave(wxCommandEvent &event)
@@ -157,6 +170,7 @@ void main_editor_frame::OnSave(wxCommandEvent &event)
 
     wxFileName fileName(saveFileDialog.GetPath());
     SetStatusText(fileName.GetFullName(), 0);
+    SaveLastFilePath(saveFileDialog.GetPath());
 }
 
 void main_editor_frame::OnOpen(wxCommandEvent &event)
@@ -182,6 +196,7 @@ void main_editor_frame::OnOpen(wxCommandEvent &event)
     editor->LoadFile(openFileDialog.GetPath());
     wxFileName fileName(openFileDialog.GetPath());
     SetStatusText(fileName.GetFullName(), 0);
+    SaveLastFilePath(openFileDialog.GetPath());
 }
 
 void main_editor_frame::OnNewFile(wxCommandEvent& event)
@@ -303,4 +318,23 @@ void main_editor_frame::OnZoomOut(wxCommandEvent &event)
 {
     int currentZoom = editor->GetZoom();
     editor->SetZoom(currentZoom - ZOOM_INCREMENT);
+}
+
+void main_editor_frame::SaveLastFilePath(const wxString &path)
+{
+    wxFile file("last_file_path.txt", wxFile::write);
+    file.Write(path);
+    file.Close();
+}
+
+wxString main_editor_frame::LoadLastFilePath()
+{
+    wxString lastPath;
+    wxFile file("last_file_path.txt", wxFile::read);
+    if(file.IsOpened())
+    {
+        file.ReadAll(&lastPath);
+    }
+    file.Close();
+    return lastPath;
 }
