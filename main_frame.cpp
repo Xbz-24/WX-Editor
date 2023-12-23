@@ -6,6 +6,7 @@
 #include "FindDialog.hpp"
 #include <wx/filename.h>
 #include <wx/timer.h>
+#include <algorithm>
 
 class app : public wxApp
 {
@@ -27,7 +28,8 @@ private:
     wxDECLARE_EVENT_TABLE();
     wxButton *zoomInButton;
     wxButton *zoomOutButton;
-    static const int ZOOM_INCREMENT = 3;
+    static const int ZOOM_INCREMENT = 12;
+    bool m_draggingMargin = false;
 public:
     main_editor_frame(const wxString &title, const wxPoint &pos, const wxSize &size);
     void OnSave(wxCommandEvent &event);
@@ -43,6 +45,9 @@ public:
     void OnZoomOut(wxCommandEvent &event);
     static void SaveLastFilePath(const wxString& path);
     static wxString LoadLastFilePath();
+    void OnMarginLeftDown(wxMouseEvent& event);
+    void OnMarginLeftUp(wxMouseEvent& event);
+    void OnMarginMotion(wxMouseEvent& event);
 };
 
 wxIMPLEMENT_APP(app);
@@ -84,6 +89,10 @@ main_editor_frame::main_editor_frame(const wxString& title, const wxPoint& pos, 
 
     editor = new wxStyledTextCtrl(this, wxID_ANY);
     editor->Bind(wxEVT_STC_UPDATEUI, &main_editor_frame::OnEditorUpdate, this);
+    editor->Bind(wxEVT_LEFT_DOWN, &main_editor_frame::OnMarginLeftDown, this);
+    editor->Bind(wxEVT_LEFT_UP, &main_editor_frame::OnMarginLeftUp, this);
+    editor->Bind(wxEVT_MOTION, &main_editor_frame::OnMarginMotion, this);
+
     editor->SetZoom(100);
 
     auto* hbox = new wxBoxSizer(wxHORIZONTAL);
@@ -116,8 +125,10 @@ main_editor_frame::main_editor_frame(const wxString& title, const wxPoint& pos, 
     editor->StyleSetBold(wxSTC_C_COMMENTDOC         , Constants::STYLE_BOLD);
 
     editor->SetKeyWords(0,Constants::EDITOR_KEYWORDS);
-    editor->SetMarginType(0, Constants::MARGIN_NUMBER_TYPE);
-    editor->SetMarginWidth(0, editor->TextWidth(wxSTC_STYLE_LINENUMBER, "_99999"));
+
+    editor->SetMarginType(0, wxSTC_MARGIN_NUMBER);
+    editor->SetMarginWidth(0, 150);
+    editor->SetMarginSensitive(1, true);
     editor->SetMarginType(1, Constants::MARGIN_SYMBOL_TYPE);
     editor->SetMarginWidth(1,Constants::MARGIN_WIDTH);
     editor->SetMarginSensitive(1,true);
@@ -201,8 +212,13 @@ void main_editor_frame::OnOpen(wxCommandEvent &event)
 
 void main_editor_frame::OnNewFile(wxCommandEvent& event)
 {
-    if (editor->GetModify()) {
-        wxMessageDialog confirmDialog(this, _("Do you want to save changes to the current document?"), _("Confirm"), wxYES_NO | wxCANCEL | wxICON_QUESTION);
+    if (editor->GetModify())
+    {
+        wxMessageDialog confirmDialog
+        (
+        this, _("Do you want to save changes to the current document?")
+            ,_("Confirm"), wxYES_NO | wxCANCEL | wxICON_QUESTION
+        );
         int response = confirmDialog.ShowModal();
 
         if (response == wxID_YES) {
@@ -211,11 +227,9 @@ void main_editor_frame::OnNewFile(wxCommandEvent& event)
             return;
         }
     }
-
     editor->ClearAll();
     editor->EmptyUndoBuffer();
     SetTitle("wx-editor - New File");
-
 }
 
 void main_editor_frame::OnToggleDarkMode(wxCommandEvent& event)
@@ -238,7 +252,6 @@ void main_editor_frame::ApplyEditorStyles(bool isDarkMode)
         editor->StyleSetBackground(style, theme.background);
         editor->StyleSetForeground(style, theme.foreground);
     }
-
     editor->StyleSetForeground(wxSTC_C_STRING, theme.colorString);
     editor->StyleSetForeground(wxSTC_C_PREPROCESSOR, theme.colorPreprocessor);
     editor->StyleSetForeground(wxSTC_C_IDENTIFIER, theme.colorIdentifier);
@@ -304,9 +317,6 @@ void main_editor_frame::OnTimer(wxTimerEvent& event)
     SetStatusText(timeString, 2);
 }
 
-wxBEGIN_EVENT_TABLE(main_editor_frame, wxFrame)
-                EVT_TIMER(wxID_ANY, main_editor_frame::OnTimer)
-wxEND_EVENT_TABLE()
 
 void main_editor_frame::OnZoomIn(wxCommandEvent &event)
 {
@@ -338,3 +348,53 @@ wxString main_editor_frame::LoadLastFilePath()
     file.Close();
     return lastPath;
 }
+void main_editor_frame::OnMarginLeftDown(wxMouseEvent& event)
+{
+    int x = event.GetX();
+    int marginWidth = editor->GetMarginWidth(0);
+    if (x >= marginWidth - 5 && x <= marginWidth + 5) {
+        m_draggingMargin = true;
+        editor->CaptureMouse();
+        editor->SetCursor(wxCursor(wxCURSOR_SIZEWE));
+    }
+    event.Skip();
+}
+
+void main_editor_frame::OnMarginLeftUp(wxMouseEvent& event)
+{
+    if(m_draggingMargin ){
+        m_draggingMargin = false;
+        if(editor->HasCapture()){
+            editor->ReleaseMouse();
+        }
+        editor->SetCursor(wxNullCursor);
+    }
+    event.Skip();
+}
+
+void main_editor_frame::OnMarginMotion(wxMouseEvent& event)
+{
+    int x = event.GetX();
+    int marginWidth = editor->GetMarginWidth(0);
+    if (x >= marginWidth -12 && x <= marginWidth + 12)
+    {
+        editor->SetCursor(wxCursor(wxCURSOR_SIZEWE));
+    }
+    else
+    {
+        editor->SetCursor(wxNullCursor);
+    }
+
+    if(m_draggingMargin && event.Dragging()){
+        int newWidth = std::max(0,x);
+        editor->SetMarginWidth(0, newWidth);
+    }
+    event.Skip();
+}
+
+wxBEGIN_EVENT_TABLE(main_editor_frame, wxFrame)
+                EVT_TIMER(wxID_ANY, main_editor_frame::OnTimer)
+                EVT_LEFT_DOWN(main_editor_frame::OnMarginLeftDown)
+                EVT_LEFT_UP(main_editor_frame::OnMarginLeftUp)
+                EVT_MOTION(main_editor_frame::OnMarginMotion)
+wxEND_EVENT_TABLE()
