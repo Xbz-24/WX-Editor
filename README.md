@@ -1,4 +1,4 @@
-# wxEditor: A Simple Code Editor
+# wxEditor: A Lightweight Code Editor
 
 ## Overview
 wxEditor is a lightweight, cross-platform text editor designed for basic code editing. It is built using the wxWidgets framework to provide a native look and feel on each platform.
