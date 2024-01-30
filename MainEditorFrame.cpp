@@ -1,67 +1,19 @@
-#include <wx/wx.h>
-#include <wx/stc/stc.h>
-#include <wx/button.h>
-#include <wx/wfstream.h>
-#include "constants.hpp"
-#include "FindDialog.hpp"
-#include <wx/filename.h>
-#include <wx/timer.h>
-#include <algorithm>
-
-class app : public wxApp
-{
-public:
-    bool OnInit() override;
-};
-
-class main_editor_frame : public wxFrame
-{
-private:
-    wxStyledTextCtrl *editor;
-    wxButton *saveButton;
-    wxButton *openButton;
-    wxButton *newFileButton;
-    wxButton *toggleDarkModeButton;
-    wxButton *findButton;
-    wxButton *replaceButton;
-    wxTimer m_timer;
-    wxDECLARE_EVENT_TABLE();
-    wxButton *zoomInButton;
-    wxButton *zoomOutButton;
-    static const int ZOOM_INCREMENT = 12;
-    bool m_draggingMargin = false;
-public:
-    main_editor_frame(const wxString &title, const wxPoint &pos, const wxSize &size);
-    void OnSave(wxCommandEvent &event);
-    void OnOpen(wxCommandEvent &event);
-    void OnNewFile(wxCommandEvent &event);
-    void OnToggleDarkMode(wxCommandEvent &event);
-    void ApplyEditorStyles(bool isDarkMode);
-    void OnFind(wxCommandEvent &event);
-    void OnReplace(wxCommandEvent &event);
-    void OnEditorUpdate(wxStyledTextEvent& event);
-    void OnTimer(wxTimerEvent& event);
-    void OnZoomIn(wxCommandEvent &event);
-    void OnZoomOut(wxCommandEvent &event);
-    static void SaveLastFilePath(const wxString& path);
-    static wxString LoadLastFilePath();
-    void OnMarginLeftDown(wxMouseEvent& event);
-    void OnMarginLeftUp(wxMouseEvent& event);
-    void OnMarginMotion(wxMouseEvent& event);
-};
-
-wxIMPLEMENT_APP(app);
+#include "app.hpp"
+#include "MainEditorFrame.hpp"
 
 bool app::OnInit()
 {
-    wxFrame *frame = new main_editor_frame("wx-editor", wxPoint(50, 50), wxSize(450, 340));
+    wxFrame *frame = new MainEditorFrame("wx-editor", wxPoint(50, 50), wxSize(450, 340));
     frame->Maximize();
     frame->Show(true);
     return true;
 }
 
-main_editor_frame::main_editor_frame(const wxString& title, const wxPoint& pos, const wxSize& size)
-        :wxFrame(nullptr, wxID_ANY, title, pos, size), m_timer(this)
+MainEditorFrame::MainEditorFrame(const wxString& title, const wxPoint& pos, const wxSize& size) :
+    wxFrame(nullptr, wxID_ANY, title, pos, size),
+    m_timer(this),
+    m_editorComponent(new EditorComponent(this)),
+    m_toolbarComponent(new ToolbarComponent(this))
 {
     CreateStatusBar(3);
     SetStatusText("Ready", 0);
@@ -78,20 +30,20 @@ main_editor_frame::main_editor_frame(const wxString& title, const wxPoint& pos, 
     zoomInButton = new wxButton(this, wxID_ANY, "+");
     zoomOutButton = new wxButton(this, wxID_ANY, "-");
 
-    saveButton -> Bind(wxEVT_BUTTON, &main_editor_frame::OnSave, this);
-    openButton -> Bind(wxEVT_BUTTON, &main_editor_frame::OnOpen, this);
-    newFileButton -> Bind(wxEVT_BUTTON, &main_editor_frame::OnNewFile, this);
-    toggleDarkModeButton -> Bind(wxEVT_BUTTON, &main_editor_frame::OnToggleDarkMode, this);
-    findButton-> Bind(wxEVT_BUTTON, &main_editor_frame::OnFind, this);
-    replaceButton -> Bind(wxEVT_BUTTON, &main_editor_frame::OnReplace, this);
-    zoomInButton -> Bind(wxEVT_BUTTON, &main_editor_frame::OnZoomIn, this);
-    zoomOutButton -> Bind(wxEVT_BUTTON, &main_editor_frame::OnZoomOut, this);
+    saveButton -> Bind(wxEVT_BUTTON, &MainEditorFrame::OnSave, this);
+    openButton -> Bind(wxEVT_BUTTON, &MainEditorFrame::OnOpen, this);
+    newFileButton -> Bind(wxEVT_BUTTON, &MainEditorFrame::OnNewFile, this);
+    toggleDarkModeButton -> Bind(wxEVT_BUTTON, &MainEditorFrame::OnToggleDarkMode, this);
+    findButton-> Bind(wxEVT_BUTTON, &MainEditorFrame::OnFind, this);
+    replaceButton -> Bind(wxEVT_BUTTON, &MainEditorFrame::OnReplace, this);
+    zoomInButton -> Bind(wxEVT_BUTTON, &MainEditorFrame::OnZoomIn, this);
+    zoomOutButton -> Bind(wxEVT_BUTTON, &MainEditorFrame::OnZoomOut, this);
 
     editor = new wxStyledTextCtrl(this, wxID_ANY);
-    editor->Bind(wxEVT_STC_UPDATEUI, &main_editor_frame::OnEditorUpdate, this);
-    editor->Bind(wxEVT_LEFT_DOWN, &main_editor_frame::OnMarginLeftDown, this);
-    editor->Bind(wxEVT_LEFT_UP, &main_editor_frame::OnMarginLeftUp, this);
-    editor->Bind(wxEVT_MOTION, &main_editor_frame::OnMarginMotion, this);
+    editor->Bind(wxEVT_STC_UPDATEUI, &MainEditorFrame::OnEditorUpdate, this);
+    editor->Bind(wxEVT_LEFT_DOWN, &MainEditorFrame::OnMarginLeftDown, this);
+    editor->Bind(wxEVT_LEFT_UP, &MainEditorFrame::OnMarginLeftUp, this);
+    editor->Bind(wxEVT_MOTION, &MainEditorFrame::OnMarginMotion, this);
 
     editor->SetZoom(100);
 
@@ -161,7 +113,7 @@ main_editor_frame::main_editor_frame(const wxString& title, const wxPoint& pos, 
 
 }
 
-void main_editor_frame::OnSave(wxCommandEvent &event)
+void MainEditorFrame::OnSave(wxCommandEvent &event)
 {
     wxFileDialog saveFileDialog
     (
@@ -184,14 +136,14 @@ void main_editor_frame::OnSave(wxCommandEvent &event)
     SaveLastFilePath(saveFileDialog.GetPath());
 }
 
-void main_editor_frame::OnOpen(wxCommandEvent &event)
+void MainEditorFrame::OnOpen(wxCommandEvent &event)
 {
     wxFileDialog openFileDialog
-            (
-                    this, _("Open file"), "", "",
-                    "Text Files (*.txt)|*.txt|All files (*.*)|*.*",
-                    wxFD_OPEN|wxFD_FILE_MUST_EXIST
-            );
+    (
+            this, _("Open file"), "", "",
+            "Text Files (*.txt)|*.txt|All files (*.*)|*.*",
+            wxFD_OPEN|wxFD_FILE_MUST_EXIST
+    );
 
     if(openFileDialog.ShowModal() == wxID_CANCEL)
     {
@@ -210,7 +162,7 @@ void main_editor_frame::OnOpen(wxCommandEvent &event)
     SaveLastFilePath(openFileDialog.GetPath());
 }
 
-void main_editor_frame::OnNewFile(wxCommandEvent& event)
+void MainEditorFrame::OnNewFile(wxCommandEvent& event)
 {
     if (editor->GetModify())
     {
@@ -232,14 +184,14 @@ void main_editor_frame::OnNewFile(wxCommandEvent& event)
     SetTitle("wx-editor - New File");
 }
 
-void main_editor_frame::OnToggleDarkMode(wxCommandEvent& event)
+void MainEditorFrame::OnToggleDarkMode(wxCommandEvent& event)
 {
     static bool isDarkMode = false;
     ApplyEditorStyles(isDarkMode);
     isDarkMode = !isDarkMode;
 }
 
-void main_editor_frame::ApplyEditorStyles(bool isDarkMode)
+void MainEditorFrame::ApplyEditorStyles(bool isDarkMode)
 {
     Constants::ThemeSettings theme = Constants::GetThemeSettings(isDarkMode);
     editor->StyleClearAll();
@@ -273,13 +225,13 @@ void main_editor_frame::ApplyEditorStyles(bool isDarkMode)
     editor->Update();
 }
 
-void main_editor_frame::OnFind(wxCommandEvent &event)
+void MainEditorFrame::OnFind(wxCommandEvent &event)
 {
     auto* findDialog = new FindDialog(this, editor);
     findDialog->Show(true);
 }
 
-void main_editor_frame::OnReplace(wxCommandEvent &event)
+void MainEditorFrame::OnReplace(wxCommandEvent &event)
 {
     wxString findTerm = wxGetTextFromUser(_("Enter text to find:"), _("Replace"));
     wxString replaceTerm = wxGetTextFromUser(_("Enter replacement text:"), _("Replace With"));
@@ -300,7 +252,7 @@ void main_editor_frame::OnReplace(wxCommandEvent &event)
     }
 }
 
-void main_editor_frame::OnEditorUpdate(wxStyledTextEvent& event)
+void MainEditorFrame::OnEditorUpdate(wxStyledTextEvent& event)
 {
     int line = editor->GetCurrentLine() + 1;
     int col = editor->GetColumn(editor->GetCurrentPos() + 1);
@@ -310,7 +262,7 @@ void main_editor_frame::OnEditorUpdate(wxStyledTextEvent& event)
     SetStatusText(status, 1);
 }
 
-void main_editor_frame::OnTimer(wxTimerEvent& event)
+void MainEditorFrame::OnTimer(wxTimerEvent& event)
 {
     wxDateTime now = wxDateTime::Now();
     wxString timeString = now.Format("%H:%M:%S");
@@ -318,26 +270,26 @@ void main_editor_frame::OnTimer(wxTimerEvent& event)
 }
 
 
-void main_editor_frame::OnZoomIn(wxCommandEvent &event)
+void MainEditorFrame::OnZoomIn(wxCommandEvent &event)
 {
     int currentZoom = editor->GetZoom();
     editor->SetZoom(currentZoom + ZOOM_INCREMENT);
 
 }
-void main_editor_frame::OnZoomOut(wxCommandEvent &event)
+void MainEditorFrame::OnZoomOut(wxCommandEvent &event)
 {
     int currentZoom = editor->GetZoom();
     editor->SetZoom(currentZoom - ZOOM_INCREMENT);
 }
 
-void main_editor_frame::SaveLastFilePath(const wxString &path)
+void MainEditorFrame::SaveLastFilePath(const wxString &path)
 {
     wxFile file("last_file_path.txt", wxFile::write);
     file.Write(path);
     file.Close();
 }
 
-wxString main_editor_frame::LoadLastFilePath()
+wxString MainEditorFrame::LoadLastFilePath()
 {
     wxString lastPath;
     wxFile file("last_file_path.txt", wxFile::read);
@@ -348,7 +300,7 @@ wxString main_editor_frame::LoadLastFilePath()
     file.Close();
     return lastPath;
 }
-void main_editor_frame::OnMarginLeftDown(wxMouseEvent& event)
+void MainEditorFrame::OnMarginLeftDown(wxMouseEvent& event)
 {
     int x = event.GetX();
     int marginWidth = editor->GetMarginWidth(0);
@@ -364,7 +316,7 @@ void main_editor_frame::OnMarginLeftDown(wxMouseEvent& event)
     event.Skip();
 }
 
-void main_editor_frame::OnMarginLeftUp(wxMouseEvent& event)
+void MainEditorFrame::OnMarginLeftUp(wxMouseEvent& event)
 {
     if(m_draggingMargin){
         m_draggingMargin = false;
@@ -377,7 +329,7 @@ void main_editor_frame::OnMarginLeftUp(wxMouseEvent& event)
     event.Skip();
 }
 
-void main_editor_frame::OnMarginMotion(wxMouseEvent& event)
+void MainEditorFrame::OnMarginMotion(wxMouseEvent& event)
 {
     int x = event.GetX();
     int marginWidth = editor->GetMarginWidth(0);
@@ -400,9 +352,9 @@ void main_editor_frame::OnMarginMotion(wxMouseEvent& event)
     event.Skip();
 }
 
-wxBEGIN_EVENT_TABLE(main_editor_frame, wxFrame)
-                EVT_TIMER(wxID_ANY, main_editor_frame::OnTimer)
-                EVT_LEFT_DOWN(main_editor_frame::OnMarginLeftDown)
-                EVT_LEFT_UP(main_editor_frame::OnMarginLeftUp)
-                EVT_MOTION(main_editor_frame::OnMarginMotion)
+wxBEGIN_EVENT_TABLE(MainEditorFrame, wxFrame)
+                EVT_TIMER(wxID_ANY, MainEditorFrame::OnTimer)
+                EVT_LEFT_DOWN(MainEditorFrame::OnMarginLeftDown)
+                EVT_LEFT_UP(MainEditorFrame::OnMarginLeftUp)
+                EVT_MOTION(MainEditorFrame::OnMarginMotion)
 wxEND_EVENT_TABLE()
