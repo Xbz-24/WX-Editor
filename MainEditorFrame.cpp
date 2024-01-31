@@ -1,18 +1,19 @@
 #include "MainEditorFrame.hpp"
-
-
-MainEditorFrame::MainEditorFrame(const wxString& title, const wxPoint& pos, const wxSize& size) :
-    wxFrame(nullptr, wxID_ANY, title, pos, size),
-    m_timer(this),
-    m_editorComponent(new EditorComponent(this)),
-    m_toolbarComponent(new ToolbarComponent(this)),
-    editor(new wxStyledTextCtrl(this, wxID_ANY)),
-    m_fileOperations(new FileOperations(editor, this))
+MainEditorFrame::MainEditorFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
+        : wxFrame(nullptr, wxID_ANY, title, pos, size),
+            m_timer(this),
+            m_editorComponent(new EditorComponent(this)),
+            m_toolbarComponent(new ToolbarComponent(this)),
+            editor(new wxStyledTextCtrl(this, wxID_ANY)),
+            m_fileOperations(new FileOperations(editor, this))
 {
-    CreateStatusBar(3);
-    SetStatusText("Ready", 0);
-    SetStatusText("Line: 1, Col: 1", 1);
-    m_timer.Start(1000);
+    InitializeFrame();
+    InitializeButtons();
+    InitializeEditor();
+    SetupLayout();
+    BindButtonEvents();
+    BindEditorEvents();
+    LoadLastFile();
     auto* vbox = new wxBoxSizer(wxVERTICAL);
     saveButton = new wxButton(this, wxID_ANY, Constants::SAVE_BUTTON_LABEL, Constants::SAVE_BUTTON_POSITION, wxDefaultSize);
     openButton = new wxButton(this, wxID_ANY, Constants::OPEN_BUTTON_LABEL, Constants::OPEN_BUTTON_POSITION, wxDefaultSize);
@@ -44,93 +45,95 @@ MainEditorFrame::MainEditorFrame(const wxString& title, const wxPoint& pos, cons
     hbox->Add(replaceButton);
     hbox->Add(zoomInButton);
     hbox->Add(zoomOutButton);
-
     vbox->Add(hbox,0,wxEXPAND | wxALL, 5);
     editor->SetLexer(Constants::LEXER_CPP);
-
-    editor->StyleSetForeground(wxSTC_C_STRING       , Constants::COLOR_STRING);
-    editor->StyleSetForeground(wxSTC_C_PREPROCESSOR , Constants::COLOR_PREPROCESSOR);
-    editor->StyleSetForeground(wxSTC_C_IDENTIFIER   , Constants::COLOR_IDENTIFIER);
-    editor->StyleSetForeground(wxSTC_C_NUMBER       , Constants::COLOR_NUMBER);
-    editor->StyleSetForeground(wxSTC_C_CHARACTER    , Constants::COLOR_CHARACTER);
-    editor->StyleSetForeground(wxSTC_C_WORD         , Constants::COLOR_WORD);
-    editor->StyleSetForeground(wxSTC_C_WORD2        , Constants::COLOR_WORD2);
-    editor->StyleSetForeground(wxSTC_C_COMMENT      , Constants::COLOR_COMMENT);
-    editor->StyleSetForeground(wxSTC_C_COMMENTLINE  , Constants::COLOR_COMMENT_LINE);
-    editor->StyleSetForeground(wxSTC_C_COMMENTDOC   , Constants::COLOR_COMMENT_DOC);
-    editor->StyleSetForeground(wxSTC_C_OPERATOR     , Constants::COLOR_OPERATOR);
-
-    editor->StyleSetBold(wxSTC_C_WORD               , Constants::STYLE_BOLD);
-    editor->StyleSetBold(wxSTC_C_WORD2              , Constants::STYLE_BOLD);
-    editor->StyleSetBold(wxSTC_C_COMMENTDOC         , Constants::STYLE_BOLD);
-
+    editor->StyleSetForeground(wxSTC_C_STRING, Constants::COLOR_STRING);
+    editor->StyleSetForeground(wxSTC_C_PREPROCESSOR, Constants::COLOR_PREPROCESSOR);
+    editor->StyleSetForeground(wxSTC_C_IDENTIFIER, Constants::COLOR_IDENTIFIER);
+    editor->StyleSetForeground(wxSTC_C_NUMBER, Constants::COLOR_NUMBER);
+    editor->StyleSetForeground(wxSTC_C_CHARACTER, Constants::COLOR_CHARACTER);
+    editor->StyleSetForeground(wxSTC_C_WORD, Constants::COLOR_WORD);
+    editor->StyleSetForeground(wxSTC_C_WORD2, Constants::COLOR_WORD2);
+    editor->StyleSetForeground(wxSTC_C_COMMENT, Constants::COLOR_COMMENT);
+    editor->StyleSetForeground(wxSTC_C_COMMENTLINE, Constants::COLOR_COMMENT_LINE);
+    editor->StyleSetForeground(wxSTC_C_COMMENTDOC, Constants::COLOR_COMMENT_DOC);
+    editor->StyleSetForeground(wxSTC_C_OPERATOR, Constants::COLOR_OPERATOR);
+    editor->StyleSetBold(wxSTC_C_WORD, Constants::STYLE_BOLD);
+    editor->StyleSetBold(wxSTC_C_WORD2, Constants::STYLE_BOLD);
+    editor->StyleSetBold(wxSTC_C_COMMENTDOC, Constants::STYLE_BOLD);
     editor->SetKeyWords(0,Constants::EDITOR_KEYWORDS);
-
     editor->SetMarginType(0, wxSTC_MARGIN_NUMBER);
     editor->SetMarginWidth(0, 150);
     editor->SetMarginSensitive(1, true);
     editor->SetMarginType(1, Constants::MARGIN_SYMBOL_TYPE);
     editor->SetMarginWidth(1,Constants::MARGIN_WIDTH);
     editor->SetMarginSensitive(1,true);
-
     editor->MarkerDefine(Constants::MARKER_FOLDER       , wxSTC_MARK_BOXPLUS);
     editor->MarkerDefine(Constants::MARKER_FOLDER_OPEN  , wxSTC_MARK_BOXMINUS);
-
     editor->SetProperty("fold", "1");
     editor->SetFoldFlags(wxSTC_FOLDFLAG_LINEBEFORE_CONTRACTED | wxSTC_FOLDFLAG_LINEAFTER_CONTRACTED);
-
     editor->AutoCompSetSeparator(' ');
     editor->AutoCompSetIgnoreCase(true);
     editor->AutoCompSetAutoHide(false);
     editor->AutoCompSetDropRestOfWord(true);
-
     editor->AutoCompShow(0, Constants::AUTO_COMP_KEYWORDS);
-
-
     wxString lastFilePath = LoadLastFilePath();
     if(wxFileExists(lastFilePath))
     {
         editor->LoadFile(lastFilePath);
         SetStatusText(wxFileNameFromPath(lastFilePath), 0);
     }
-
-
     vbox->Add(editor,1, wxEXPAND);
     this->SetSizer(vbox);
     this->Layout();
-
 }
-
+void MainEditorFrame::InitializeFrame()
+{
+    CreateStatusBar(3);
+    SetDefaultStatusText();
+    m_timer.Start(1000);
+}
+void MainEditorFrame::InitializeButtons()
+{
+}
+void MainEditorFrame::InitializeEditor()
+{
+}
+void MainEditorFrame::SetupLayout()
+{
+}
+void MainEditorFrame::SetupEventBindings()
+{
+}
+void MainEditorFrame::SetDefaultStatusText()
+{
+    SetStatusText("Ready", 0);
+    SetStatusText("Line: 1, Col: 1", 1);
+}
 void MainEditorFrame::OnSave(wxCommandEvent &event)
 {
     m_fileOperations->OnSave(event);
 }
-
 void MainEditorFrame::OnOpen(wxCommandEvent &event)
 {
     m_fileOperations->OnOpen(event);
 }
-
 void MainEditorFrame::OnNewFile(wxCommandEvent& event)
 {
     m_fileOperations->OnNewFile(event);
 }
-
 void MainEditorFrame::OnToggleDarkMode(wxCommandEvent& event)
 {
     static bool isDarkMode = false;
     ApplyEditorStyles(isDarkMode);
     isDarkMode = !isDarkMode;
 }
-
 void MainEditorFrame::ApplyEditorStyles(bool isDarkMode)
 {
     Constants::ThemeSettings theme = Constants::GetThemeSettings(isDarkMode);
     editor->StyleClearAll();
-
     editor->SetLexer(Constants::LEXER_CPP);
     editor->SetKeyWords(0, Constants::EDITOR_KEYWORDS);
-
     for(int style = 0; style < wxSTC_STYLE_LASTPREDEFINED; style++)
     {
         editor->StyleSetBackground(style, theme.background);
@@ -147,7 +150,6 @@ void MainEditorFrame::ApplyEditorStyles(bool isDarkMode)
     editor->StyleSetForeground(wxSTC_C_COMMENTLINE, theme.colorCommentLine);
     editor->StyleSetForeground(wxSTC_C_COMMENTDOC, theme.colorCommentDoc);
     editor->StyleSetForeground(wxSTC_C_OPERATOR, theme.colorOperator);
-
     if (Constants::STYLE_BOLD)
     {
         editor->StyleSetBold(wxSTC_C_WORD, true);
@@ -156,13 +158,11 @@ void MainEditorFrame::ApplyEditorStyles(bool isDarkMode)
     editor->Refresh();
     editor->Update();
 }
-
 void MainEditorFrame::OnFind(wxCommandEvent &event)
 {
     auto* findDialog = new FindDialog(this, editor);
     findDialog->Show(true);
 }
-
 void MainEditorFrame::OnReplace(wxCommandEvent &event)
 {
     wxString findTerm = wxGetTextFromUser(_("Enter text to find:"), _("Replace"));
@@ -183,44 +183,36 @@ void MainEditorFrame::OnReplace(wxCommandEvent &event)
         }
     }
 }
-
 void MainEditorFrame::OnEditorUpdate(wxStyledTextEvent& event)
 {
     int line = editor->GetCurrentLine() + 1;
     int col = editor->GetColumn(editor->GetCurrentPos() + 1);
-
     wxString status;
     status << "Line: " << line << ", Col: " << col;
     SetStatusText(status, 1);
 }
-
 void MainEditorFrame::OnTimer(wxTimerEvent& event)
 {
     wxDateTime now = wxDateTime::Now();
     wxString timeString = now.Format("%H:%M:%S");
     SetStatusText(timeString, 2);
 }
-
-
 void MainEditorFrame::OnZoomIn(wxCommandEvent &event)
 {
     int currentZoom = editor->GetZoom();
     editor->SetZoom(currentZoom + ZOOM_INCREMENT);
-
 }
 void MainEditorFrame::OnZoomOut(wxCommandEvent &event)
 {
     int currentZoom = editor->GetZoom();
     editor->SetZoom(currentZoom - ZOOM_INCREMENT);
 }
-
 void MainEditorFrame::SaveLastFilePath(const wxString &path)
 {
     wxFile file("last_file_path.txt", wxFile::write);
     file.Write(path);
     file.Close();
 }
-
 wxString MainEditorFrame::LoadLastFilePath()
 {
     wxString lastPath;
@@ -247,7 +239,6 @@ void MainEditorFrame::OnMarginLeftDown(wxMouseEvent& event)
     }
     event.Skip();
 }
-
 void MainEditorFrame::OnMarginLeftUp(wxMouseEvent& event)
 {
     if(m_draggingMargin){
@@ -260,12 +251,10 @@ void MainEditorFrame::OnMarginLeftUp(wxMouseEvent& event)
     }
     event.Skip();
 }
-
 void MainEditorFrame::OnMarginMotion(wxMouseEvent& event)
 {
     int x = event.GetX();
     int marginWidth = editor->GetMarginWidth(0);
-
     if (x >= marginWidth - 12 && x <= marginWidth + 12)
     {
         editor->SetCursor(wxCursor(wxCURSOR_SIZEWE));
@@ -274,19 +263,25 @@ void MainEditorFrame::OnMarginMotion(wxMouseEvent& event)
     {
         editor->SetCursor(wxNullCursor);
     }
-
     if (m_draggingMargin && event.Dragging())
     {
         int newWidth = std::max(0, x);
         editor->SetMarginWidth(0, newWidth);
     }
-
     event.Skip();
 }
-
 wxBEGIN_EVENT_TABLE(MainEditorFrame, wxFrame)
                 EVT_TIMER(wxID_ANY, MainEditorFrame::OnTimer)
                 EVT_LEFT_DOWN(MainEditorFrame::OnMarginLeftDown)
                 EVT_LEFT_UP(MainEditorFrame::OnMarginLeftUp)
                 EVT_MOTION(MainEditorFrame::OnMarginMotion)
 wxEND_EVENT_TABLE()
+void MainEditorFrame::BindButtonEvents()
+{
+}
+void MainEditorFrame::BindEditorEvents()
+{
+}
+void MainEditorFrame::LoadLastFile()
+{
+}

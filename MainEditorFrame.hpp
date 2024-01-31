@@ -60,8 +60,25 @@ public:
     void OnMarginLeftDown(wxMouseEvent& event);
     void OnMarginLeftUp(wxMouseEvent& event);
     void OnMarginMotion(wxMouseEvent& event);
+    void SetDefaultStatusText();
 
+    void InitializeFrame();
 
+    void InitializeButtons();
+
+    void InitializeUI();
+
+    void InitializeEditor();
+
+    void SetupLayout();
+
+    void SetupEventBindings();
+
+    void BindButtonEvents();
+
+    void BindEditorEvents();
+
+    void LoadLastFile();
 };
 
 #endif //EDITOR_MAINEDITORFRAME_HPP
