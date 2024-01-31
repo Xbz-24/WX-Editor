@@ -1,6 +1,6 @@
 #include "MainEditorFrame.hpp"
 MainEditorFrame::MainEditorFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
-        : wxFrame(nullptr, wxID_ANY, title, pos, size),
+        :   wxFrame(nullptr, wxID_ANY, title, pos, size),
             m_timer(this),
             m_editorComponent(new EditorComponent(this)),
             m_toolbarComponent(new ToolbarComponent(this)),
@@ -14,7 +14,15 @@ MainEditorFrame::MainEditorFrame(const wxString& title, const wxPoint& pos, cons
     BindButtonEvents();
     BindEditorEvents();
     LoadLastFile();
-    auto* vbox = new wxBoxSizer(wxVERTICAL);
+}
+void MainEditorFrame::InitializeFrame()
+{
+    CreateStatusBar(3);
+    SetDefaultStatusText();
+    m_timer.Start(1000);
+}
+void MainEditorFrame::InitializeButtons()
+{
     saveButton = new wxButton(this, wxID_ANY, Constants::SAVE_BUTTON_LABEL, Constants::SAVE_BUTTON_POSITION, wxDefaultSize);
     openButton = new wxButton(this, wxID_ANY, Constants::OPEN_BUTTON_LABEL, Constants::OPEN_BUTTON_POSITION, wxDefaultSize);
     newFileButton = new wxButton(this, wxID_ANY, "New File");
@@ -23,29 +31,10 @@ MainEditorFrame::MainEditorFrame(const wxString& title, const wxPoint& pos, cons
     replaceButton = new wxButton(this, wxID_ANY, "Replace");
     zoomInButton = new wxButton(this, wxID_ANY, "+");
     zoomOutButton = new wxButton(this, wxID_ANY, "-");
-    saveButton -> Bind(wxEVT_BUTTON, &MainEditorFrame::OnSave, this);
-    openButton -> Bind(wxEVT_BUTTON, &MainEditorFrame::OnOpen, this);
-    newFileButton -> Bind(wxEVT_BUTTON, &MainEditorFrame::OnNewFile, this);
-    toggleDarkModeButton -> Bind(wxEVT_BUTTON, &MainEditorFrame::OnToggleDarkMode, this);
-    findButton-> Bind(wxEVT_BUTTON, &MainEditorFrame::OnFind, this);
-    replaceButton -> Bind(wxEVT_BUTTON, &MainEditorFrame::OnReplace, this);
-    zoomInButton -> Bind(wxEVT_BUTTON, &MainEditorFrame::OnZoomIn, this);
-    zoomOutButton -> Bind(wxEVT_BUTTON, &MainEditorFrame::OnZoomOut, this);
-    editor->Bind(wxEVT_STC_UPDATEUI, &MainEditorFrame::OnEditorUpdate, this);
-    editor->Bind(wxEVT_LEFT_DOWN, &MainEditorFrame::OnMarginLeftDown, this);
-    editor->Bind(wxEVT_LEFT_UP, &MainEditorFrame::OnMarginLeftUp, this);
-    editor->Bind(wxEVT_MOTION, &MainEditorFrame::OnMarginMotion, this);
+}
+void MainEditorFrame::InitializeEditor()
+{
     editor->SetZoom(100);
-    auto* hbox = new wxBoxSizer(wxHORIZONTAL);
-    hbox->Add(saveButton);
-    hbox->Add(openButton);
-    hbox->Add(newFileButton);
-    hbox->Add(toggleDarkModeButton);
-    hbox->Add(findButton);
-    hbox->Add(replaceButton);
-    hbox->Add(zoomInButton);
-    hbox->Add(zoomOutButton);
-    vbox->Add(hbox,0,wxEXPAND | wxALL, 5);
     editor->SetLexer(Constants::LEXER_CPP);
     editor->StyleSetForeground(wxSTC_C_STRING, Constants::COLOR_STRING);
     editor->StyleSetForeground(wxSTC_C_PREPROCESSOR, Constants::COLOR_PREPROCESSOR);
@@ -77,30 +66,23 @@ MainEditorFrame::MainEditorFrame(const wxString& title, const wxPoint& pos, cons
     editor->AutoCompSetAutoHide(false);
     editor->AutoCompSetDropRestOfWord(true);
     editor->AutoCompShow(0, Constants::AUTO_COMP_KEYWORDS);
-    wxString lastFilePath = LoadLastFilePath();
-    if(wxFileExists(lastFilePath))
-    {
-        editor->LoadFile(lastFilePath);
-        SetStatusText(wxFileNameFromPath(lastFilePath), 0);
-    }
-    vbox->Add(editor,1, wxEXPAND);
-    this->SetSizer(vbox);
-    this->Layout();
-}
-void MainEditorFrame::InitializeFrame()
-{
-    CreateStatusBar(3);
-    SetDefaultStatusText();
-    m_timer.Start(1000);
-}
-void MainEditorFrame::InitializeButtons()
-{
-}
-void MainEditorFrame::InitializeEditor()
-{
 }
 void MainEditorFrame::SetupLayout()
 {
+    auto* vbox = new wxBoxSizer(wxVERTICAL);
+    auto* hbox = new wxBoxSizer(wxHORIZONTAL);
+    vbox->Add(hbox,0,wxEXPAND | wxALL, 5);
+    hbox->Add(saveButton);
+    hbox->Add(openButton);
+    hbox->Add(newFileButton);
+    hbox->Add(toggleDarkModeButton);
+    hbox->Add(findButton);
+    hbox->Add(replaceButton);
+    hbox->Add(zoomInButton);
+    hbox->Add(zoomOutButton);
+    vbox->Add(editor,1, wxEXPAND);
+    this->SetSizer(vbox);
+    this->Layout();
 }
 void MainEditorFrame::SetupEventBindings()
 {
@@ -270,18 +252,37 @@ void MainEditorFrame::OnMarginMotion(wxMouseEvent& event)
     }
     event.Skip();
 }
+
+void MainEditorFrame::BindButtonEvents()
+{
+    saveButton -> Bind(wxEVT_BUTTON, &MainEditorFrame::OnSave, this);
+    openButton -> Bind(wxEVT_BUTTON, &MainEditorFrame::OnOpen, this);
+    newFileButton -> Bind(wxEVT_BUTTON, &MainEditorFrame::OnNewFile, this);
+    toggleDarkModeButton -> Bind(wxEVT_BUTTON, &MainEditorFrame::OnToggleDarkMode, this);
+    findButton-> Bind(wxEVT_BUTTON, &MainEditorFrame::OnFind, this);
+    replaceButton -> Bind(wxEVT_BUTTON, &MainEditorFrame::OnReplace, this);
+    zoomInButton -> Bind(wxEVT_BUTTON, &MainEditorFrame::OnZoomIn, this);
+    zoomOutButton -> Bind(wxEVT_BUTTON, &MainEditorFrame::OnZoomOut, this);
+}
+void MainEditorFrame::BindEditorEvents()
+{
+    editor->Bind(wxEVT_STC_UPDATEUI, &MainEditorFrame::OnEditorUpdate, this);
+    editor->Bind(wxEVT_LEFT_DOWN, &MainEditorFrame::OnMarginLeftDown, this);
+    editor->Bind(wxEVT_LEFT_UP, &MainEditorFrame::OnMarginLeftUp, this);
+    editor->Bind(wxEVT_MOTION, &MainEditorFrame::OnMarginMotion, this);
+}
+void MainEditorFrame::LoadLastFile()
+{
+    wxString lastFilePath = LoadLastFilePath();
+    if(wxFileExists(lastFilePath))
+    {
+        editor->LoadFile(lastFilePath);
+        SetStatusText(wxFileNameFromPath(lastFilePath), 0);
+    }
+}
 wxBEGIN_EVENT_TABLE(MainEditorFrame, wxFrame)
                 EVT_TIMER(wxID_ANY, MainEditorFrame::OnTimer)
                 EVT_LEFT_DOWN(MainEditorFrame::OnMarginLeftDown)
                 EVT_LEFT_UP(MainEditorFrame::OnMarginLeftUp)
                 EVT_MOTION(MainEditorFrame::OnMarginMotion)
 wxEND_EVENT_TABLE()
-void MainEditorFrame::BindButtonEvents()
-{
-}
-void MainEditorFrame::BindEditorEvents()
-{
-}
-void MainEditorFrame::LoadLastFile()
-{
-}
