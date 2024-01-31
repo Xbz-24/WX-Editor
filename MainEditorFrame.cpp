@@ -21,20 +21,15 @@ void MainEditorFrame::InitializeFrame()
     SetDefaultStatusText();
     m_timer.Start(1000);
 }
-void MainEditorFrame::InitializeButtons()
-{
-    saveButton = new wxButton(this, wxID_ANY, Constants::SAVE_BUTTON_LABEL, Constants::SAVE_BUTTON_POSITION, wxDefaultSize);
-    openButton = new wxButton(this, wxID_ANY, Constants::OPEN_BUTTON_LABEL, Constants::OPEN_BUTTON_POSITION, wxDefaultSize);
-    newFileButton = new wxButton(this, wxID_ANY, "New File");
-    toggleDarkModeButton = new wxButton(this, wxID_ANY, "Toggle Dark Mode");
-    findButton = new wxButton(this, wxID_ANY, "Find");
-    replaceButton = new wxButton(this, wxID_ANY, "Replace");
-    zoomInButton = new wxButton(this, wxID_ANY, "+");
-    zoomOutButton = new wxButton(this, wxID_ANY, "-");
-}
 void MainEditorFrame::InitializeEditor()
 {
     editor->SetZoom(100);
+    SetupEditorStyles();
+    SetupEditorMargins();
+    SetupEditorAutoCompletion();
+}
+void MainEditorFrame::SetupEditorStyles()
+{
     editor->SetLexer(Constants::LEXER_CPP);
     editor->StyleSetForeground(wxSTC_C_STRING, Constants::COLOR_STRING);
     editor->StyleSetForeground(wxSTC_C_PREPROCESSOR, Constants::COLOR_PREPROCESSOR);
@@ -51,6 +46,9 @@ void MainEditorFrame::InitializeEditor()
     editor->StyleSetBold(wxSTC_C_WORD2, Constants::STYLE_BOLD);
     editor->StyleSetBold(wxSTC_C_COMMENTDOC, Constants::STYLE_BOLD);
     editor->SetKeyWords(0,Constants::EDITOR_KEYWORDS);
+}
+void MainEditorFrame::SetupEditorMargins()
+{
     editor->SetMarginType(0, wxSTC_MARGIN_NUMBER);
     editor->SetMarginWidth(0, 150);
     editor->SetMarginSensitive(1, true);
@@ -61,11 +59,29 @@ void MainEditorFrame::InitializeEditor()
     editor->MarkerDefine(Constants::MARKER_FOLDER_OPEN  , wxSTC_MARK_BOXMINUS);
     editor->SetProperty("fold", "1");
     editor->SetFoldFlags(wxSTC_FOLDFLAG_LINEBEFORE_CONTRACTED | wxSTC_FOLDFLAG_LINEAFTER_CONTRACTED);
+}
+void MainEditorFrame::SetupEditorAutoCompletion()
+{
     editor->AutoCompSetSeparator(' ');
     editor->AutoCompSetIgnoreCase(true);
     editor->AutoCompSetAutoHide(false);
     editor->AutoCompSetDropRestOfWord(true);
     editor->AutoCompShow(0, Constants::AUTO_COMP_KEYWORDS);
+}
+void MainEditorFrame::InitializeButtons()
+{
+    saveButton = new wxButton(this, wxID_ANY, Constants::SAVE_BUTTON_LABEL, Constants::SAVE_BUTTON_POSITION, wxDefaultSize);
+    openButton = new wxButton(this, wxID_ANY, Constants::OPEN_BUTTON_LABEL, Constants::OPEN_BUTTON_POSITION, wxDefaultSize);
+    newFileButton = new wxButton(this, wxID_ANY, "New File");
+    toggleDarkModeButton = new wxButton(this, wxID_ANY, "Toggle Dark Mode");
+    findButton = new wxButton(this, wxID_ANY, "Find");
+    replaceButton = new wxButton(this, wxID_ANY, "Replace");
+    zoomInButton = new wxButton(this, wxID_ANY, "+");
+    zoomOutButton = new wxButton(this, wxID_ANY, "-");
+}
+void MainEditorFrame::CreateButton(wxButton* button, const wxString& label, const wxPoint& position)
+{
+    button = new wxButton(this, wxID_ANY, label, position, wxDefaultSize);
 }
 void MainEditorFrame::SetupLayout()
 {
@@ -86,6 +102,7 @@ void MainEditorFrame::SetupLayout()
 }
 void MainEditorFrame::SetupEventBindings()
 {
+
 }
 void MainEditorFrame::SetDefaultStatusText()
 {
@@ -274,7 +291,7 @@ void MainEditorFrame::BindEditorEvents()
 void MainEditorFrame::LoadLastFile()
 {
     wxString lastFilePath = LoadLastFilePath();
-    if(wxFileExists(lastFilePath))
+    if(wxFileExists(lastFilePath) && editor)
     {
         editor->LoadFile(lastFilePath);
         SetStatusText(wxFileNameFromPath(lastFilePath), 0);
