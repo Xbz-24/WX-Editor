@@ -8,18 +8,23 @@
 
 #include <wx/wx.h>
 #include <wx/stc/stc.h>
+#include <wx/filename.h>
+#include <wx/wfstream.h>
+#include <wx/filename.h>
+
 class FileOperations
 {
 public:
     FileOperations(wxStyledTextCtrl* editor, wxFrame* frame);
 
-    void OnOpen(wxCommandEvent& event, wxStyledTextCtrl* editor);
-    void OnSave(wxCommandEvent& event, wxStyledTextCtrl* editor);
-    void OnNewFile(wxCommandEvent& event, wxStyledTextCtrl* editor);
+    void OnOpen(wxCommandEvent& event);
+    void OnSave(wxCommandEvent& event);
+    void OnNewFile(wxCommandEvent& event);
     void SaveLastFilePath(const wxString& path);
     wxString LoadLastFilePath();
 private:
     wxStyledTextCtrl* m_editor;
     wxFrame* m_frame;
 };
+
 #endif //EDITOR_FILEOPERATIONS_HPP

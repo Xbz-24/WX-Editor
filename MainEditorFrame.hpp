@@ -23,6 +23,21 @@
 class MainEditorFrame : public wxFrame
 {
 private:
+    wxStyledTextCtrl *editor;
+    wxButton *saveButton;
+    wxButton *openButton;
+    wxButton *newFileButton;
+    wxButton *toggleDarkModeButton;
+    wxButton *findButton;
+    wxButton *replaceButton;
+    wxTimer m_timer;
+wxDECLARE_EVENT_TABLE();
+    wxButton *zoomInButton;
+    wxButton *zoomOutButton;
+    static const int ZOOM_INCREMENT = 12;
+    bool m_draggingMargin = false;
+
+private:
     EditorComponent* m_editorComponent;
     ToolbarComponent* m_toolbarComponent;
     FileOperations* m_fileOperations;
@@ -46,21 +61,7 @@ public:
     void OnMarginLeftUp(wxMouseEvent& event);
     void OnMarginMotion(wxMouseEvent& event);
 
-private:
-    wxStyledTextCtrl *editor;
-    wxButton *saveButton;
-    wxButton *openButton;
-    wxButton *newFileButton;
-    wxButton *toggleDarkModeButton;
-    wxButton *findButton;
-    wxButton *replaceButton;
-    wxTimer m_timer;
-wxDECLARE_EVENT_TABLE();
-    wxButton *zoomInButton;
-    wxButton *zoomOutButton;
-    static const int ZOOM_INCREMENT = 12;
-    bool m_draggingMargin = false;
+
 };
 
-wxIMPLEMENT_APP(app);
 #endif //EDITOR_MAINEDITORFRAME_HPP

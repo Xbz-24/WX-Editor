@@ -1,26 +1,18 @@
-#include "app.hpp"
 #include "MainEditorFrame.hpp"
 
-bool app::OnInit()
-{
-    wxFrame *frame = new MainEditorFrame("wx-editor", wxPoint(50, 50), wxSize(450, 340));
-    frame->Maximize();
-    frame->Show(true);
-    return true;
-}
 
 MainEditorFrame::MainEditorFrame(const wxString& title, const wxPoint& pos, const wxSize& size) :
     wxFrame(nullptr, wxID_ANY, title, pos, size),
     m_timer(this),
     m_editorComponent(new EditorComponent(this)),
     m_toolbarComponent(new ToolbarComponent(this)),
-    m_fileOperations(new FileOperations(m_editorComponent->GetEditor(), this))
+    editor(new wxStyledTextCtrl(this, wxID_ANY)),
+    m_fileOperations(new FileOperations(editor, this))
 {
     CreateStatusBar(3);
     SetStatusText("Ready", 0);
     SetStatusText("Line: 1, Col: 1", 1);
     m_timer.Start(1000);
-
     auto* vbox = new wxBoxSizer(wxVERTICAL);
     saveButton = new wxButton(this, wxID_ANY, Constants::SAVE_BUTTON_LABEL, Constants::SAVE_BUTTON_POSITION, wxDefaultSize);
     openButton = new wxButton(this, wxID_ANY, Constants::OPEN_BUTTON_LABEL, Constants::OPEN_BUTTON_POSITION, wxDefaultSize);
@@ -30,7 +22,6 @@ MainEditorFrame::MainEditorFrame(const wxString& title, const wxPoint& pos, cons
     replaceButton = new wxButton(this, wxID_ANY, "Replace");
     zoomInButton = new wxButton(this, wxID_ANY, "+");
     zoomOutButton = new wxButton(this, wxID_ANY, "-");
-
     saveButton -> Bind(wxEVT_BUTTON, &MainEditorFrame::OnSave, this);
     openButton -> Bind(wxEVT_BUTTON, &MainEditorFrame::OnOpen, this);
     newFileButton -> Bind(wxEVT_BUTTON, &MainEditorFrame::OnNewFile, this);
@@ -39,15 +30,11 @@ MainEditorFrame::MainEditorFrame(const wxString& title, const wxPoint& pos, cons
     replaceButton -> Bind(wxEVT_BUTTON, &MainEditorFrame::OnReplace, this);
     zoomInButton -> Bind(wxEVT_BUTTON, &MainEditorFrame::OnZoomIn, this);
     zoomOutButton -> Bind(wxEVT_BUTTON, &MainEditorFrame::OnZoomOut, this);
-
-    editor = new wxStyledTextCtrl(this, wxID_ANY);
     editor->Bind(wxEVT_STC_UPDATEUI, &MainEditorFrame::OnEditorUpdate, this);
     editor->Bind(wxEVT_LEFT_DOWN, &MainEditorFrame::OnMarginLeftDown, this);
     editor->Bind(wxEVT_LEFT_UP, &MainEditorFrame::OnMarginLeftUp, this);
     editor->Bind(wxEVT_MOTION, &MainEditorFrame::OnMarginMotion, this);
-
     editor->SetZoom(100);
-
     auto* hbox = new wxBoxSizer(wxHORIZONTAL);
     hbox->Add(saveButton);
     hbox->Add(openButton);
@@ -116,34 +103,17 @@ MainEditorFrame::MainEditorFrame(const wxString& title, const wxPoint& pos, cons
 
 void MainEditorFrame::OnSave(wxCommandEvent &event)
 {
-    m_fileOperations->OnSave(event, editor);
+    m_fileOperations->OnSave(event);
 }
 
 void MainEditorFrame::OnOpen(wxCommandEvent &event)
 {
-    m_fileOperations->OnOpen(event, editor);
+    m_fileOperations->OnOpen(event);
 }
 
 void MainEditorFrame::OnNewFile(wxCommandEvent& event)
 {
-    if (editor->GetModify())
-    {
-        wxMessageDialog confirmDialog
-                (
-                        this, _("Do you want to save changes to the current document?")
-                        ,_("Confirm"), wxYES_NO | wxCANCEL | wxICON_QUESTION
-                );
-        int response = confirmDialog.ShowModal();
-
-        if (response == wxID_YES) {
-            OnSave(event);
-        } else if (response == wxID_CANCEL) {
-            return;
-        }
-    }
-    editor->ClearAll();
-    editor->EmptyUndoBuffer();
-    SetTitle("wx-editor - New File");
+    m_fileOperations->OnNewFile(event);
 }
 
 void MainEditorFrame::OnToggleDarkMode(wxCommandEvent& event)
