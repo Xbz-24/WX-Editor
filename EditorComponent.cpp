@@ -3,9 +3,10 @@
 //
 
 #include "EditorComponent.hpp"
+#include "constants.hpp"
 
-
-EditorComponent::EditorComponent(wxWindow *parent) : m_editor(new wxStyledTextCtrl(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0L, wxEmptyString))
+EditorComponent::EditorComponent(wxWindow *parent)
+: m_editor(new wxStyledTextCtrl(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0L, wxEmptyString))
 {
 
 }

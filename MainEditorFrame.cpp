@@ -13,7 +13,8 @@ MainEditorFrame::MainEditorFrame(const wxString& title, const wxPoint& pos, cons
     wxFrame(nullptr, wxID_ANY, title, pos, size),
     m_timer(this),
     m_editorComponent(new EditorComponent(this)),
-    m_toolbarComponent(new ToolbarComponent(this))
+    m_toolbarComponent(new ToolbarComponent(this)),
+    m_fileOperations(new FileOperations(m_editorComponent->GetEditor(), this))
 {
     CreateStatusBar(3);
     SetStatusText("Ready", 0);
@@ -115,51 +116,12 @@ MainEditorFrame::MainEditorFrame(const wxString& title, const wxPoint& pos, cons
 
 void MainEditorFrame::OnSave(wxCommandEvent &event)
 {
-    wxFileDialog saveFileDialog
-    (
-    this, _("Save File"), "", "",
-    "Text Files (*.txt)|*.txt|All files (*.*)|*.*",
-    wxFD_SAVE | wxFD_OVERWRITE_PROMPT
-    );
-
-    if(saveFileDialog.ShowModal() == wxID_CANCEL)
-    {
-        return;
-    }
-    if(!editor->SaveFile(saveFileDialog.GetPath()))
-    {
-        wxLogError("Cannot save current contents in file '%s'.", saveFileDialog.GetPath());
-    }
-
-    wxFileName fileName(saveFileDialog.GetPath());
-    SetStatusText(fileName.GetFullName(), 0);
-    SaveLastFilePath(saveFileDialog.GetPath());
+    m_fileOperations->OnSave(event, editor);
 }
 
 void MainEditorFrame::OnOpen(wxCommandEvent &event)
 {
-    wxFileDialog openFileDialog
-    (
-            this, _("Open file"), "", "",
-            "Text Files (*.txt)|*.txt|All files (*.*)|*.*",
-            wxFD_OPEN|wxFD_FILE_MUST_EXIST
-    );
-
-    if(openFileDialog.ShowModal() == wxID_CANCEL)
-    {
-        return;
-    }
-
-    wxFileInputStream input_stream(openFileDialog.GetPath());
-    if(!input_stream.IsOk())
-    {
-        wxLogError("Cannot open file '%s'.", openFileDialog.GetPath());
-        return;
-    }
-    editor->LoadFile(openFileDialog.GetPath());
-    wxFileName fileName(openFileDialog.GetPath());
-    SetStatusText(fileName.GetFullName(), 0);
-    SaveLastFilePath(openFileDialog.GetPath());
+    m_fileOperations->OnOpen(event, editor);
 }
 
 void MainEditorFrame::OnNewFile(wxCommandEvent& event)
@@ -167,10 +129,10 @@ void MainEditorFrame::OnNewFile(wxCommandEvent& event)
     if (editor->GetModify())
     {
         wxMessageDialog confirmDialog
-        (
-        this, _("Do you want to save changes to the current document?")
-            ,_("Confirm"), wxYES_NO | wxCANCEL | wxICON_QUESTION
-        );
+                (
+                        this, _("Do you want to save changes to the current document?")
+                        ,_("Confirm"), wxYES_NO | wxCANCEL | wxICON_QUESTION
+                );
         int response = confirmDialog.ShowModal();
 
         if (response == wxID_YES) {
