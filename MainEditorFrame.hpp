@@ -18,6 +18,7 @@
 #include "app.hpp"
 #include "EditorComponent.hpp"
 #include "ToolbarComponent.hpp"
+#include "FileOperations.hpp"
 
 class MainEditorFrame : public wxFrame
 {
@@ -35,6 +36,12 @@ wxDECLARE_EVENT_TABLE();
     wxButton *zoomOutButton;
     static const int ZOOM_INCREMENT = 12;
     bool m_draggingMargin = false;
+
+private:
+    EditorComponent* m_editorComponent;
+    ToolbarComponent* m_toolbarComponent;
+    FileOperations* m_fileOperations;
+
 public:
     MainEditorFrame(const wxString &title, const wxPoint &pos, const wxSize &size);
     void OnSave(wxCommandEvent &event);
@@ -53,10 +60,8 @@ public:
     void OnMarginLeftDown(wxMouseEvent& event);
     void OnMarginLeftUp(wxMouseEvent& event);
     void OnMarginMotion(wxMouseEvent& event);
-private:
-    EditorComponent* m_editorComponent;
-    ToolbarComponent* m_toolbarComponent;
+
+
 };
 
-wxIMPLEMENT_APP(app);
 #endif //EDITOR_MAINEDITORFRAME_HPP
