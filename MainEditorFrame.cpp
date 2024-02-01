@@ -28,7 +28,7 @@ void MainEditorFrame::InitializeFrame()
 }
 void MainEditorFrame::InitializeButtons()
 {
-    m_toolbarComponent->InitializeButtons();
+//    m_toolbarComponent->InitializeButtons();
 }
 void MainEditorFrame::InitializeEditor()
 {
