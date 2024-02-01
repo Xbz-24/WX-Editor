@@ -4,14 +4,19 @@
 
 #include "FileOperations.hpp"
 
-
-
-FileOperations::FileOperations(wxStyledTextCtrl* editor, wxFrame* frame)
+ FileOperations::FileOperations(wxStyledTextCtrl* editor, wxFrame* frame)
     : m_editor(editor), m_frame(frame)
 {
-
+    if (!m_editor || !m_frame) {
+        throw std::runtime_error("Editor or frame is uninitialized in FileOperations");
+    }
 }
-
+void FileOperations::BindButtonEvents()
+{
+    m_toolbarComponent->GetButtons()[0]->Bind(wxEVT_BUTTON, &FileOperations::OnSave, this);
+    m_toolbarComponent->GetButtons()[1]->Bind(wxEVT_BUTTON, &FileOperations::OnOpen, this);
+    m_toolbarComponent->GetButtons()[2]->Bind(wxEVT_BUTTON, &FileOperations::OnNewFile, this);
+}
 
 void FileOperations::SaveLastFilePath(const wxString& path)
 {
@@ -25,6 +30,9 @@ wxString FileOperations::LoadLastFilePath()
 
 void FileOperations::OnSave(wxCommandEvent& event)
 {
+    if (!m_editor) {
+        throw std::runtime_error("Editor is uninitialized");
+    }
     wxFileDialog saveFileDialog
     (
     m_frame, _("Save File"), "", "",
@@ -54,12 +62,10 @@ void FileOperations::OnOpen(wxCommandEvent& event)
         "Text Files (*.txt)|*.txt|All files (*.*)|*.*",
         wxFD_OPEN|wxFD_FILE_MUST_EXIST
     );
-
     if(openFileDialog.ShowModal() == wxID_CANCEL)
     {
         return;
     }
-
     wxFileInputStream input_stream(openFileDialog.GetPath());
     if(!input_stream.IsOk())
     {

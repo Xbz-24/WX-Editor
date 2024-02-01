@@ -7,6 +7,7 @@
 #include <wx/colour.h>
 #include <wx/string.h>
 #include <wx/gdicmn.h>
+#include <wx/stc/stc.h>
 
 namespace Constants
 {

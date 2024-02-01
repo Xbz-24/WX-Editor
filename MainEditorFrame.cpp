@@ -1,12 +1,17 @@
 #include "MainEditorFrame.hpp"
+
 MainEditorFrame::MainEditorFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
-        :   wxFrame(nullptr, wxID_ANY, title, pos, size),
-            m_timer(this),
-            m_editorComponent(new EditorComponent(this)),
-            m_toolbarComponent(new ToolbarComponent(this)),
-            editor(new wxStyledTextCtrl(this, wxID_ANY)),
-            m_fileOperations(new FileOperations(editor, this))
+:   wxFrame(nullptr, wxID_ANY, title, pos, size),
+    m_timer(this),
+    m_editorComponent(new EditorComponent(this, this)),
+    m_toolbarComponent(new ToolbarComponent(this)),
+    m_fileOperations(new FileOperations(m_editorComponent->GetEditor(), this)),
+    m_layoutComponent(new LayoutComponent(this, m_editorComponent, m_toolbarComponent->GetButtons())),
+    m_statusBarComponent(new StatusBarComponent(this))
 {
+    if (!m_editorComponent || !m_toolbarComponent || !m_fileOperations || !m_layoutComponent || !m_statusBarComponent) {
+        throw std::runtime_error("Component initialization failed");
+    }
     InitializeFrame();
     InitializeButtons();
     InitializeEditor();
@@ -21,88 +26,42 @@ void MainEditorFrame::InitializeFrame()
     SetDefaultStatusText();
     m_timer.Start(1000);
 }
-void MainEditorFrame::InitializeEditor()
-{
-    editor->SetZoom(100);
-    SetupEditorStyles();
-    SetupEditorMargins();
-    SetupEditorAutoCompletion();
-}
-void MainEditorFrame::SetupEditorStyles()
-{
-    editor->SetLexer(Constants::LEXER_CPP);
-    editor->StyleSetForeground(wxSTC_C_STRING, Constants::COLOR_STRING);
-    editor->StyleSetForeground(wxSTC_C_PREPROCESSOR, Constants::COLOR_PREPROCESSOR);
-    editor->StyleSetForeground(wxSTC_C_IDENTIFIER, Constants::COLOR_IDENTIFIER);
-    editor->StyleSetForeground(wxSTC_C_NUMBER, Constants::COLOR_NUMBER);
-    editor->StyleSetForeground(wxSTC_C_CHARACTER, Constants::COLOR_CHARACTER);
-    editor->StyleSetForeground(wxSTC_C_WORD, Constants::COLOR_WORD);
-    editor->StyleSetForeground(wxSTC_C_WORD2, Constants::COLOR_WORD2);
-    editor->StyleSetForeground(wxSTC_C_COMMENT, Constants::COLOR_COMMENT);
-    editor->StyleSetForeground(wxSTC_C_COMMENTLINE, Constants::COLOR_COMMENT_LINE);
-    editor->StyleSetForeground(wxSTC_C_COMMENTDOC, Constants::COLOR_COMMENT_DOC);
-    editor->StyleSetForeground(wxSTC_C_OPERATOR, Constants::COLOR_OPERATOR);
-    editor->StyleSetBold(wxSTC_C_WORD, Constants::STYLE_BOLD);
-    editor->StyleSetBold(wxSTC_C_WORD2, Constants::STYLE_BOLD);
-    editor->StyleSetBold(wxSTC_C_COMMENTDOC, Constants::STYLE_BOLD);
-    editor->SetKeyWords(0,Constants::EDITOR_KEYWORDS);
-}
-void MainEditorFrame::SetupEditorMargins()
-{
-    editor->SetMarginType(0, wxSTC_MARGIN_NUMBER);
-    editor->SetMarginWidth(0, 150);
-    editor->SetMarginSensitive(1, true);
-    editor->SetMarginType(1, Constants::MARGIN_SYMBOL_TYPE);
-    editor->SetMarginWidth(1,Constants::MARGIN_WIDTH);
-    editor->SetMarginSensitive(1,true);
-    editor->MarkerDefine(Constants::MARKER_FOLDER       , wxSTC_MARK_BOXPLUS);
-    editor->MarkerDefine(Constants::MARKER_FOLDER_OPEN  , wxSTC_MARK_BOXMINUS);
-    editor->SetProperty("fold", "1");
-    editor->SetFoldFlags(wxSTC_FOLDFLAG_LINEBEFORE_CONTRACTED | wxSTC_FOLDFLAG_LINEAFTER_CONTRACTED);
-}
-void MainEditorFrame::SetupEditorAutoCompletion()
-{
-    editor->AutoCompSetSeparator(' ');
-    editor->AutoCompSetIgnoreCase(true);
-    editor->AutoCompSetAutoHide(false);
-    editor->AutoCompSetDropRestOfWord(true);
-    editor->AutoCompShow(0, Constants::AUTO_COMP_KEYWORDS);
-}
 void MainEditorFrame::InitializeButtons()
 {
-    saveButton = new wxButton(this, wxID_ANY, Constants::SAVE_BUTTON_LABEL, Constants::SAVE_BUTTON_POSITION, wxDefaultSize);
-    openButton = new wxButton(this, wxID_ANY, Constants::OPEN_BUTTON_LABEL, Constants::OPEN_BUTTON_POSITION, wxDefaultSize);
-    newFileButton = new wxButton(this, wxID_ANY, "New File");
-    toggleDarkModeButton = new wxButton(this, wxID_ANY, "Toggle Dark Mode");
-    findButton = new wxButton(this, wxID_ANY, "Find");
-    replaceButton = new wxButton(this, wxID_ANY, "Replace");
-    zoomInButton = new wxButton(this, wxID_ANY, "+");
-    zoomOutButton = new wxButton(this, wxID_ANY, "-");
+    m_toolbarComponent->InitializeButtons();
 }
-void MainEditorFrame::CreateButton(wxButton* button, const wxString& label, const wxPoint& position)
+void MainEditorFrame::InitializeEditor()
 {
-    button = new wxButton(this, wxID_ANY, label, position, wxDefaultSize);
+    m_editorComponent->InitializeEditor();
 }
 void MainEditorFrame::SetupLayout()
 {
-    auto* vbox = new wxBoxSizer(wxVERTICAL);
-    auto* hbox = new wxBoxSizer(wxHORIZONTAL);
-    vbox->Add(hbox,0,wxEXPAND | wxALL, 5);
-    hbox->Add(saveButton);
-    hbox->Add(openButton);
-    hbox->Add(newFileButton);
-    hbox->Add(toggleDarkModeButton);
-    hbox->Add(findButton);
-    hbox->Add(replaceButton);
-    hbox->Add(zoomInButton);
-    hbox->Add(zoomOutButton);
-    vbox->Add(editor,1, wxEXPAND);
-    this->SetSizer(vbox);
-    this->Layout();
+    m_layoutComponent->SetupLayout();
+//    m_layoutComponent->setButtons(m_toolbarComponent->GetButtons());
 }
-void MainEditorFrame::SetupEventBindings()
+void MainEditorFrame::BindButtonEvents()
 {
-
+//    m_fileOperations->BindButtonEvents();
+//    m_toolbarComponent->GetButtons()[3]->Bind(wxEVT_BUTTON, &MainEditorFrame::OnToggleDarkMode, this);
+    std::vector<std::function<void(wxCommandEvent&)>> callbacks = {
+            [this](wxCommandEvent& event){ this->OnSave(event); },
+            [this](wxCommandEvent& event){ this->OnOpen(event); },
+            [this](wxCommandEvent& event){ this->OnNewFile(event); },
+            [this](wxCommandEvent& event){ this->OnToggleDarkMode(event); },
+            [this](wxCommandEvent& event){ this->OnFind(event); },
+            [this](wxCommandEvent& event){ this->OnReplace(event); },
+            [this](wxCommandEvent& event){ this->OnZoomIn(event); },
+            [this](wxCommandEvent& event){ this->OnZoomOut(event); }
+    };
+    m_toolbarComponent->BindButtonEvents(callbacks);
+//    saveButton->Bind(wxEVT_BUTTON, &MainEditorFrame::OnSave, this);
+//    openButton->Bind(wxEVT_BUTTON, &MainEditorFrame::OnOpen, this);
+//    newFileButton->Bind(wxEVT_BUTTON, &MainEditorFrame::OnNewFile, this);
+//    toggleDarkModeButton->Bind(wxEVT_BUTTON, &MainEditorFrame::OnToggleDarkMode, this);
+//    findButton->Bind(wxEVT_BUTTON, &MainEditorFrame::OnFind, this);
+//    replaceButton->Bind(wxEVT_BUTTON, &MainEditorFrame::OnReplace, this);
+//    zoomInButton->Bind(wxEVT_BUTTON, &MainEditorFrame::OnZoomIn, this);
+//    zoomOutButton->Bind(wxEVT_BUTTON, &MainEditorFrame::OnZoomOut, this);
 }
 void MainEditorFrame::SetDefaultStatusText()
 {
@@ -111,6 +70,9 @@ void MainEditorFrame::SetDefaultStatusText()
 }
 void MainEditorFrame::OnSave(wxCommandEvent &event)
 {
+    if (!m_fileOperations) {
+        throw std::runtime_error("File operations component is uninitialized");
+    }
     m_fileOperations->OnSave(event);
 }
 void MainEditorFrame::OnOpen(wxCommandEvent &event)
@@ -130,6 +92,7 @@ void MainEditorFrame::OnToggleDarkMode(wxCommandEvent& event)
 void MainEditorFrame::ApplyEditorStyles(bool isDarkMode)
 {
     Constants::ThemeSettings theme = Constants::GetThemeSettings(isDarkMode);
+    auto* editor = m_editorComponent->GetEditor();
     editor->StyleClearAll();
     editor->SetLexer(Constants::LEXER_CPP);
     editor->SetKeyWords(0, Constants::EDITOR_KEYWORDS);
@@ -157,18 +120,20 @@ void MainEditorFrame::ApplyEditorStyles(bool isDarkMode)
     editor->Refresh();
     editor->Update();
 }
-void MainEditorFrame::OnFind(wxCommandEvent &event)
+void MainEditorFrame::OnFind(wxCommandEvent& event)
 {
+    auto* editor = m_editorComponent->GetEditor();
     auto* findDialog = new FindDialog(this, editor);
     findDialog->Show(true);
 }
-void MainEditorFrame::OnReplace(wxCommandEvent &event)
+void MainEditorFrame::OnReplace(wxCommandEvent& event)
 {
     wxString findTerm = wxGetTextFromUser(_("Enter text to find:"), _("Replace"));
     wxString replaceTerm = wxGetTextFromUser(_("Enter replacement text:"), _("Replace With"));
     if(!findTerm.IsEmpty() && !replaceTerm.IsEmpty())
     {
         int start = 0;
+        auto* editor = m_editorComponent->GetEditor();
         int end = editor->GetTextLength();
         editor->SetTargetStart(start);
         editor->SetTargetEnd(end);
@@ -182,13 +147,9 @@ void MainEditorFrame::OnReplace(wxCommandEvent &event)
         }
     }
 }
-void MainEditorFrame::OnEditorUpdate(wxStyledTextEvent& event)
+void MainEditorFrame::OnEditorUpdate(wxCommandEvent& event)
 {
-    int line = editor->GetCurrentLine() + 1;
-    int col = editor->GetColumn(editor->GetCurrentPos() + 1);
-    wxString status;
-    status << "Line: " << line << ", Col: " << col;
-    SetStatusText(status, 1);
+    m_editorComponent->OnEditorUpdate(event);
 }
 void MainEditorFrame::OnTimer(wxTimerEvent& event)
 {
@@ -196,13 +157,15 @@ void MainEditorFrame::OnTimer(wxTimerEvent& event)
     wxString timeString = now.Format("%H:%M:%S");
     SetStatusText(timeString, 2);
 }
-void MainEditorFrame::OnZoomIn(wxCommandEvent &event)
+void MainEditorFrame::OnZoomIn(wxCommandEvent& event)
 {
+    auto* editor = m_editorComponent->GetEditor();
     int currentZoom = editor->GetZoom();
     editor->SetZoom(currentZoom + ZOOM_INCREMENT);
 }
-void MainEditorFrame::OnZoomOut(wxCommandEvent &event)
+void MainEditorFrame::OnZoomOut(wxCommandEvent& event)
 {
+    auto* editor = m_editorComponent->GetEditor();
     int currentZoom = editor->GetZoom();
     editor->SetZoom(currentZoom - ZOOM_INCREMENT);
 }
@@ -225,72 +188,24 @@ wxString MainEditorFrame::LoadLastFilePath()
 }
 void MainEditorFrame::OnMarginLeftDown(wxMouseEvent& event)
 {
-    int x = event.GetX();
-    int marginWidth = editor->GetMarginWidth(0);
-    if (!m_draggingMargin && x >= marginWidth - 12 && x <= marginWidth + 12)
-    {
-        m_draggingMargin = true;
-        if (wxWindow::GetCapture() != editor)
-        {
-            editor->CaptureMouse();
-        }
-        editor->SetCursor(wxCursor(wxCURSOR_SIZEWE));
-    }
-    event.Skip();
+    m_editorComponent->OnMarginLeftDown(event);
 }
 void MainEditorFrame::OnMarginLeftUp(wxMouseEvent& event)
 {
-    if(m_draggingMargin){
-        m_draggingMargin = false;
-        if(editor->HasCapture())
-        {
-            editor->ReleaseMouse();
-        }
-        editor->SetCursor(wxNullCursor);
-    }
-    event.Skip();
+    m_editorComponent->OnMarginLeftUp(event);
 }
 void MainEditorFrame::OnMarginMotion(wxMouseEvent& event)
 {
-    int x = event.GetX();
-    int marginWidth = editor->GetMarginWidth(0);
-    if (x >= marginWidth - 12 && x <= marginWidth + 12)
-    {
-        editor->SetCursor(wxCursor(wxCURSOR_SIZEWE));
-    }
-    else
-    {
-        editor->SetCursor(wxNullCursor);
-    }
-    if (m_draggingMargin && event.Dragging())
-    {
-        int newWidth = std::max(0, x);
-        editor->SetMarginWidth(0, newWidth);
-    }
-    event.Skip();
-}
-
-void MainEditorFrame::BindButtonEvents()
-{
-    saveButton -> Bind(wxEVT_BUTTON, &MainEditorFrame::OnSave, this);
-    openButton -> Bind(wxEVT_BUTTON, &MainEditorFrame::OnOpen, this);
-    newFileButton -> Bind(wxEVT_BUTTON, &MainEditorFrame::OnNewFile, this);
-    toggleDarkModeButton -> Bind(wxEVT_BUTTON, &MainEditorFrame::OnToggleDarkMode, this);
-    findButton-> Bind(wxEVT_BUTTON, &MainEditorFrame::OnFind, this);
-    replaceButton -> Bind(wxEVT_BUTTON, &MainEditorFrame::OnReplace, this);
-    zoomInButton -> Bind(wxEVT_BUTTON, &MainEditorFrame::OnZoomIn, this);
-    zoomOutButton -> Bind(wxEVT_BUTTON, &MainEditorFrame::OnZoomOut, this);
+    m_editorComponent->OnMarginMotion(event);
 }
 void MainEditorFrame::BindEditorEvents()
 {
-    editor->Bind(wxEVT_STC_UPDATEUI, &MainEditorFrame::OnEditorUpdate, this);
-    editor->Bind(wxEVT_LEFT_DOWN, &MainEditorFrame::OnMarginLeftDown, this);
-    editor->Bind(wxEVT_LEFT_UP, &MainEditorFrame::OnMarginLeftUp, this);
-    editor->Bind(wxEVT_MOTION, &MainEditorFrame::OnMarginMotion, this);
+    m_editorComponent->BindEditorEvents();
 }
 void MainEditorFrame::LoadLastFile()
 {
     wxString lastFilePath = LoadLastFilePath();
+    auto *editor = m_editorComponent->GetEditor();
     if(wxFileExists(lastFilePath) && editor)
     {
         editor->LoadFile(lastFilePath);

@@ -8,16 +8,25 @@
 
 #include <wx/window.h>
 #include <wx/button.h>
+#include <wx/frame.h>
+#include <functional>
+#include <vector>
 
 class ToolbarComponent
 {
 public:
     ToolbarComponent(wxWindow* parent);
-    void createButtons(wxWindow* parent);
+    void InitializeButtons();
     ~ToolbarComponent();
 
 private:
+    wxWindow* m_parent;
     wxButton *saveButton, *openButton, *newFileButton, *toggleDarkModeButton;
+    wxButton *findButton, *replaceButton, *zoomInButton, *zoomOutButton;
+
+public:
+    std::vector<wxButton *> GetButtons();
+    void BindButtonEvents(const std::vector<std::function<void(wxCommandEvent&)>>& callbacks);
 };
 
 

@@ -11,12 +11,13 @@
 #include <wx/filename.h>
 #include <wx/wfstream.h>
 #include <wx/filename.h>
+#include "ToolbarComponent.hpp"
 
 class FileOperations
 {
 public:
     FileOperations(wxStyledTextCtrl* editor, wxFrame* frame);
-
+    void BindButtonEvents();
     void OnOpen(wxCommandEvent& event);
     void OnSave(wxCommandEvent& event);
     void OnNewFile(wxCommandEvent& event);
@@ -25,6 +26,7 @@ public:
 private:
     wxStyledTextCtrl* m_editor;
     wxFrame* m_frame;
+    ToolbarComponent* m_toolbarComponent;
 };
 
 #endif //EDITOR_FILEOPERATIONS_HPP

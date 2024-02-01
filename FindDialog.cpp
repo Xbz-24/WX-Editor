@@ -58,7 +58,7 @@ void FindDialog::OnFindNext(wxCommandEvent& event)
         }
     }
 }
-void FindDialog::OnFindPrevious(wxCommandEvent &event)
+void FindDialog::OnFindPrevious(wxCommandEvent& event)
 {
     wxString findTerm = m_findTextCtrl->GetValue();
     if(findTerm != m_lastFindTerm)
@@ -86,7 +86,6 @@ void FindDialog::OnFindPrevious(wxCommandEvent &event)
         }
     }
 }
-
 void FindDialog::OnClose(wxCommandEvent& event)
 {
     this->Destroy();
