@@ -6,7 +6,6 @@
 #include <wx/stc/stc.h>
 #include <wx/frame.h>
 #include <wx/event.h>
-
 class EditorComponent
 {
 public:
@@ -22,7 +21,6 @@ private:
     wxStyledTextCtrl *m_editor;
     bool m_draggingMargin = false;
     wxFrame* m_frame;
-
 public:
     void InitializeEditor();
     void SetupEditorStyles();

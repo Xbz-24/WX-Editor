@@ -1,13 +1,12 @@
 //
 // Created by daily on 1/30/24.
 //
-
 #include "FileOperations.hpp"
-
  FileOperations::FileOperations(wxStyledTextCtrl* editor, wxFrame* frame)
     : m_editor(editor), m_frame(frame)
 {
-    if (!m_editor || !m_frame) {
+    if (!m_editor || !m_frame)
+    {
         throw std::runtime_error("Editor or frame is uninitialized in FileOperations");
     }
 }
@@ -17,17 +16,13 @@ void FileOperations::BindButtonEvents()
     m_toolbarComponent->GetButtons()[1]->Bind(wxEVT_BUTTON, &FileOperations::OnOpen, this);
     m_toolbarComponent->GetButtons()[2]->Bind(wxEVT_BUTTON, &FileOperations::OnNewFile, this);
 }
-
 void FileOperations::SaveLastFilePath(const wxString& path)
 {
-    // ... save last file path logic ...
 }
-
 wxString FileOperations::LoadLastFilePath()
 {
     return "path";
 }
-
 void FileOperations::OnSave(wxCommandEvent& event)
 {
     if (!m_editor) {
@@ -39,7 +34,6 @@ void FileOperations::OnSave(wxCommandEvent& event)
     "Text Files (*.txt)|*.txt|All files (*.*)|*.*",
     wxFD_SAVE | wxFD_OVERWRITE_PROMPT
     );
-
     if(saveFileDialog.ShowModal() == wxID_CANCEL)
     {
         return;
@@ -48,12 +42,10 @@ void FileOperations::OnSave(wxCommandEvent& event)
     {
         wxLogError("Cannot save current contents in file '%s'.", saveFileDialog.GetPath());
     }
-
     wxFileName fileName(saveFileDialog.GetPath());
     m_frame->SetStatusText(fileName.GetFullName(), 0);
     SaveLastFilePath(saveFileDialog.GetPath());
 }
-
 void FileOperations::OnOpen(wxCommandEvent& event)
 {
     wxFileDialog openFileDialog
@@ -75,8 +67,8 @@ void FileOperations::OnOpen(wxCommandEvent& event)
     m_editor->LoadFile(openFileDialog.GetPath());
     wxFileName fileName(openFileDialog.GetPath());
     m_frame->SetStatusText(fileName.GetFullName(), 0);
-    SaveLastFilePath(openFileDialog.GetPath());}
-
+    SaveLastFilePath(openFileDialog.GetPath());
+}
 void FileOperations::OnNewFile(wxCommandEvent& event)
 {
     if (m_editor->GetModify())

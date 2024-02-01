@@ -20,7 +20,6 @@ void LayoutComponent::SetupLayout()
         {
             throw std::runtime_error("Button is null, LayoutComponent.cpp");
         }
-
         hbox->Add(button);
     }
     if(m_editorComponent->GetEditor() == nullptr)

@@ -1,10 +1,8 @@
 //
 // Created by daily on 1/30/24.
 //
-
 #include "ToolbarComponent.hpp"
 #include "constants.hpp"
-
 ToolbarComponent::ToolbarComponent(wxWindow *parent)
     : m_parent(parent)
 {
@@ -53,5 +51,4 @@ void ToolbarComponent::BindButtonEvents(const std::vector<std::function<void(wxC
 }
 ToolbarComponent::~ToolbarComponent()
 {
-
 }

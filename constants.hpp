@@ -3,7 +3,6 @@
 //
 #ifndef EDITOR_CONSTANTS_HPP
 #define EDITOR_CONSTANTS_HPP
-
 #include <wx/colour.h>
 #include <wx/string.h>
 #include <wx/gdicmn.h>
@@ -139,5 +138,4 @@ namespace Constants
         }
     }
 };
-
 #endif //EDITOR_CONSTANTS_HPP
