@@ -13,7 +13,6 @@ MainEditorFrame::MainEditorFrame(const wxString& title, const wxPoint& pos, cons
         throw std::runtime_error("Component initialization failed");
     }
     InitializeFrame();
-    InitializeButtons();
     InitializeEditor();
     SetupLayout();
     BindButtonEvents();
@@ -26,10 +25,7 @@ void MainEditorFrame::InitializeFrame()
     SetDefaultStatusText();
     m_timer.Start(1000);
 }
-void MainEditorFrame::InitializeButtons()
-{
-//    m_toolbarComponent->InitializeButtons();
-}
+
 void MainEditorFrame::InitializeEditor()
 {
     m_editorComponent->InitializeEditor();
@@ -37,12 +33,9 @@ void MainEditorFrame::InitializeEditor()
 void MainEditorFrame::SetupLayout()
 {
     m_layoutComponent->SetupLayout();
-//    m_layoutComponent->setButtons(m_toolbarComponent->GetButtons());
 }
 void MainEditorFrame::BindButtonEvents()
 {
-//    m_fileOperations->BindButtonEvents();
-//    m_toolbarComponent->GetButtons()[3]->Bind(wxEVT_BUTTON, &MainEditorFrame::OnToggleDarkMode, this);
     std::vector<std::function<void(wxCommandEvent&)>> callbacks = {
             [this](wxCommandEvent& event){ this->OnSave(event); },
             [this](wxCommandEvent& event){ this->OnOpen(event); },
@@ -54,14 +47,6 @@ void MainEditorFrame::BindButtonEvents()
             [this](wxCommandEvent& event){ this->OnZoomOut(event); }
     };
     m_toolbarComponent->BindButtonEvents(callbacks);
-//    saveButton->Bind(wxEVT_BUTTON, &MainEditorFrame::OnSave, this);
-//    openButton->Bind(wxEVT_BUTTON, &MainEditorFrame::OnOpen, this);
-//    newFileButton->Bind(wxEVT_BUTTON, &MainEditorFrame::OnNewFile, this);
-//    toggleDarkModeButton->Bind(wxEVT_BUTTON, &MainEditorFrame::OnToggleDarkMode, this);
-//    findButton->Bind(wxEVT_BUTTON, &MainEditorFrame::OnFind, this);
-//    replaceButton->Bind(wxEVT_BUTTON, &MainEditorFrame::OnReplace, this);
-//    zoomInButton->Bind(wxEVT_BUTTON, &MainEditorFrame::OnZoomIn, this);
-//    zoomOutButton->Bind(wxEVT_BUTTON, &MainEditorFrame::OnZoomOut, this);
 }
 void MainEditorFrame::SetDefaultStatusText()
 {
