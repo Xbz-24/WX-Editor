@@ -18,7 +18,6 @@
 #include "FileOperations.hpp"
 #include "LayoutComponent.hpp"
 #include "StatusBarComponent.hpp"
-
 class MainEditorFrame : public wxFrame
 {
 private:
@@ -71,7 +70,6 @@ public:
     void SetupEditorMargins();
     void SetupEditorAutoCompletion();
     void CreateButtons();
-
     wxFrame *GetFrame();
 };
 #endif //EDITOR_MAINEDITORFRAME_HPP

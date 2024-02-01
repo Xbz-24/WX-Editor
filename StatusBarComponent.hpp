@@ -3,9 +3,7 @@
 //
 #ifndef EDITOR_STATUSBARCOMPONENT_HPP
 #define EDITOR_STATUSBARCOMPONENT_HPP
-
 #include <wx/wx.h>
-
 class StatusBarComponent
 {
 public:

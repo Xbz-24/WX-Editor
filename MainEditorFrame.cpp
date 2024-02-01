@@ -1,5 +1,4 @@
 #include "MainEditorFrame.hpp"
-
 MainEditorFrame::MainEditorFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
 :   wxFrame(nullptr, wxID_ANY, title, pos, size),
     m_timer(this),
@@ -25,7 +24,6 @@ void MainEditorFrame::InitializeFrame()
     SetDefaultStatusText();
     m_timer.Start(1000);
 }
-
 void MainEditorFrame::InitializeEditor()
 {
     m_editorComponent->InitializeEditor();
@@ -36,15 +34,16 @@ void MainEditorFrame::SetupLayout()
 }
 void MainEditorFrame::BindButtonEvents()
 {
-    std::vector<std::function<void(wxCommandEvent&)>> callbacks = {
-            [this](wxCommandEvent& event){ this->OnSave(event); },
-            [this](wxCommandEvent& event){ this->OnOpen(event); },
-            [this](wxCommandEvent& event){ this->OnNewFile(event); },
-            [this](wxCommandEvent& event){ this->OnToggleDarkMode(event); },
-            [this](wxCommandEvent& event){ this->OnFind(event); },
-            [this](wxCommandEvent& event){ this->OnReplace(event); },
-            [this](wxCommandEvent& event){ this->OnZoomIn(event); },
-            [this](wxCommandEvent& event){ this->OnZoomOut(event); }
+    std::vector<std::function<void(wxCommandEvent&)>> callbacks =
+    {
+        [this](wxCommandEvent& event){ this->OnSave(event); },
+        [this](wxCommandEvent& event){ this->OnOpen(event); },
+        [this](wxCommandEvent& event){ this->OnNewFile(event); },
+        [this](wxCommandEvent& event){ this->OnToggleDarkMode(event); },
+        [this](wxCommandEvent& event){ this->OnFind(event); },
+        [this](wxCommandEvent& event){ this->OnReplace(event); },
+        [this](wxCommandEvent& event){ this->OnZoomIn(event); },
+        [this](wxCommandEvent& event){ this->OnZoomOut(event); }
     };
     m_toolbarComponent->BindButtonEvents(callbacks);
 }
@@ -78,6 +77,7 @@ void MainEditorFrame::ApplyEditorStyles(bool isDarkMode)
 {
     Constants::ThemeSettings theme = Constants::GetThemeSettings(isDarkMode);
     auto* editor = m_editorComponent->GetEditor();
+
     editor->StyleClearAll();
     editor->SetLexer(Constants::LEXER_CPP);
     editor->SetKeyWords(0, Constants::EDITOR_KEYWORDS);
