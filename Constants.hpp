@@ -62,6 +62,8 @@ namespace Constants
     constexpr wxFontFamily DEFAULT_EDITOR_FONT_FAMILY = wxFONTFAMILY_MODERN;
     constexpr wxFontStyle DEFAULT_EDITOR_FONT_STYLE = wxFONTSTYLE_NORMAL;
     constexpr wxFontWeight DEFAULT_EDITOR_FONT_WEIGHT = wxFONTWEIGHT_NORMAL;
+    constexpr int DEFAULT_EDITOR_FONT_UNDERLINE = 0;
+    const wxString DEFAULT_EDITOR_FONT_FACE = wxString("Consolas");
     namespace LightTheme
     {
         const wxColour COLOR_STRING(150, 0, 0);
