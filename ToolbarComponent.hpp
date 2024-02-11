@@ -1,6 +1,10 @@
-//
-// Created by daily on 1/30/24.
-//
+/**
+ * @file ToolbarComponent.hpp
+ * @brief This class is responsible for managing the toolbar of the editor.
+ * @version 0.1
+ * @date 2024-01-30
+ * @Author Renato German Chavez Chicoma
+ */
 #ifndef EDITOR_TOOLBARCOMPONENT_HPP
 #define EDITOR_TOOLBARCOMPONENT_HPP
 #include <wx/window.h>
@@ -8,6 +12,7 @@
 #include <wx/frame.h>
 #include <functional>
 #include <vector>
+
 class ToolbarComponent
 {
 public:
