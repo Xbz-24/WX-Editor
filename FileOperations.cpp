@@ -1,7 +1,12 @@
-//
-// Created by daily on 1/30/24.
-//
+/**
+ * @file app.cpp
+ * @brief This class is responsible for initializing the application.
+ * @version 0.1
+ * @date 2024-01-30
+ * @Author Renato German Chavez Chicoma
+ */
 #include "FileOperations.hpp"
+
  FileOperations::FileOperations(wxStyledTextCtrl* editor, wxFrame* frame)
     : m_editor(editor), m_frame(frame)
 {
