@@ -1,7 +1,12 @@
-//
-// Created by daily on 22-12-23.
-//
+/**
+ * @file FindDialog.cpp
+ * @brief This class is responsible for finding text in the editor.
+ * @version 0.1
+ * @date 2023-12-23
+ * @Author Renato German Chavez Chicoma
+ */
 #include "FindDialog.hpp"
+
 FindDialog::FindDialog(wxWindow* parent, wxStyledTextCtrl* editor):
     wxDialog(parent, wxID_ANY, "Find", wxDefaultPosition, wxDefaultSize),
     m_editor(editor)
