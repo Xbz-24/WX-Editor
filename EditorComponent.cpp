@@ -34,7 +34,7 @@ void EditorComponent::SetupEditorStyles()
 }
 void EditorComponent::SetupEditorMargins() {
     m_editor->SetMarginType(0, wxSTC_MARGIN_NUMBER);
-    m_editor->SetMarginWidth(0, 150);
+    m_editor->SetMarginWidth(0, Constants::EDITOR_MARGIN_WIDTH_PIXELS);
     m_editor->SetMarginSensitive(1, true);
     m_editor->SetMarginType(1, Constants::MARGIN_SYMBOL_TYPE);
     m_editor->SetMarginWidth(1, Constants::MARGIN_WIDTH);

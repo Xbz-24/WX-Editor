@@ -44,6 +44,7 @@ namespace Constants
     const wxString SAVE_BUTTON_LABEL = "Save";
     const wxString OPEN_BUTTON_LABEL = "Open";
     const int ZOOM_LEVEL = 100;
+    const int EDITOR_MARGIN_WIDTH_PIXELS = 150;
 
     namespace LightTheme
     {
