@@ -43,20 +43,24 @@ namespace Constants
     const wxPoint OPEN_BUTTON_POSITION(100,300);
     const wxString SAVE_BUTTON_LABEL = "Save";
     const wxString OPEN_BUTTON_LABEL = "Open";
-    const int ZOOM_LEVEL = 100;
-    const int EDITOR_MARGIN_WIDTH_PIXELS = 150;
-    const int MINIMUM_WIDTH_MARGIN_DRAGGING = 12;
-    const int C_STRING_STYLE = wxSTC_C_STRING;
-    const int C_PREPROCESSOR_STYLE = wxSTC_C_PREPROCESSOR;
-    const int C_IDENTIFIER_STYLE = wxSTC_C_IDENTIFIER;
-    const int C_NUMBER_STYLE = wxSTC_C_NUMBER;
-    const int C_CHARACTER_STYLE = wxSTC_C_CHARACTER;
-    const int C_KEYWORD_STYLE = wxSTC_C_WORD;
-    const int C_EXTRA_KEYWORD_STYLE = wxSTC_C_WORD2;
-    const int C_MULTI_LINED_COMMENT_STYLE = wxSTC_C_COMMENT;
-    const int C_SINGLE_LINE_COMMENT_STYLE = wxSTC_C_COMMENTLINE;
-    const int C_COMMENT_DOCUMENTATION_STYLE = wxSTC_C_COMMENTDOC;
-    const int C_OPERATOR_STYLE = wxSTC_C_OPERATOR;
+    constexpr int ZOOM_LEVEL = 100;
+    constexpr int EDITOR_MARGIN_WIDTH_PIXELS = 150;
+    constexpr int MINIMUM_WIDTH_MARGIN_DRAGGING = 12;
+    constexpr int C_STRING_STYLE = wxSTC_C_STRING;
+    constexpr int C_PREPROCESSOR_STYLE = wxSTC_C_PREPROCESSOR;
+    constexpr int C_IDENTIFIER_STYLE = wxSTC_C_IDENTIFIER;
+    constexpr int C_NUMBER_STYLE = wxSTC_C_NUMBER;
+    constexpr int C_CHARACTER_STYLE = wxSTC_C_CHARACTER;
+    constexpr int C_KEYWORD_STYLE = wxSTC_C_WORD;
+    constexpr int C_EXTRA_KEYWORD_STYLE = wxSTC_C_WORD2;
+    constexpr int C_MULTI_LINED_COMMENT_STYLE = wxSTC_C_COMMENT;
+    constexpr int C_SINGLE_LINE_COMMENT_STYLE = wxSTC_C_COMMENTLINE;
+    constexpr int C_COMMENT_DOCUMENTATION_STYLE = wxSTC_C_COMMENTDOC;
+    constexpr int C_OPERATOR_STYLE = wxSTC_C_OPERATOR;
+    const wxEventTypeTag EVT_UPDATE_UI = wxEVT_STC_UPDATEUI;
+    const wxEventTypeTag EVT_LEFT_DOWN = wxEVT_LEFT_DOWN;
+    const wxEventTypeTag EVT_LEFT_UP = wxEVT_LEFT_UP;
+    const wxEventTypeTag EVT_MOTION = wxEVT_MOTION;
 
     namespace LightTheme
     {
