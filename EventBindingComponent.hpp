@@ -1,6 +1,10 @@
-//
-// Created by daily on 1/31/24.
-//
+/**
+ * @file EventBindingComponent.hpp
+ * @brief This class is responsible for binding events to the editor component.
+ * @version 0.1
+ * @date 2024-01-31
+ * @Author Renato Chavez Chicoma German
+ */
 #ifndef EDITOR_EVENTBINDINGCOMPONENT_HPP
 #define EDITOR_EVENTBINDINGCOMPONENT_HPP
 #include <wx/wx.h>
