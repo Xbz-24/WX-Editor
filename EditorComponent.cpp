@@ -32,7 +32,8 @@ void EditorComponent::SetupEditorStyles()
     m_editor->StyleSetBold(wxSTC_C_COMMENTDOC, Constants::STYLE_BOLD);
     m_editor->SetKeyWords(0,Constants::EDITOR_KEYWORDS);
 }
-void EditorComponent::SetupEditorMargins() {
+void EditorComponent::SetupEditorMargins()
+{
     m_editor->SetMarginType(0, wxSTC_MARGIN_NUMBER);
     m_editor->SetMarginWidth(0, Constants::EDITOR_MARGIN_WIDTH_PIXELS);
     m_editor->SetMarginSensitive(1, true);
