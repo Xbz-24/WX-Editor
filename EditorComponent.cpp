@@ -25,7 +25,7 @@ void EditorComponent::SetupEditorStyles()
     m_editor->StyleSetForeground(Constants::C_EXTRA_KEYWORD_STYLE, Constants::COLOR_WORD2);
     m_editor->StyleSetForeground(Constants::C_MULTI_LINED_COMMENT_STYLE, Constants::COLOR_COMMENT);
     m_editor->StyleSetForeground(Constants::C_SINGLE_LINE_COMMENT_STYLE, Constants::COLOR_COMMENT_LINE);
-    m_editor->StyleSetForeground(wxSTC_C_COMMENTDOC, Constants::COLOR_COMMENT_DOC);
+    m_editor->StyleSetForeground(Constants::C_COMMENT_DOCUMENTATION_STYLE, Constants::COLOR_COMMENT_DOC);
     m_editor->StyleSetForeground(wxSTC_C_OPERATOR, Constants::COLOR_OPERATOR);
     m_editor->StyleSetBold(wxSTC_C_WORD, Constants::STYLE_BOLD);
     m_editor->StyleSetBold(wxSTC_C_WORD2, Constants::STYLE_BOLD);
