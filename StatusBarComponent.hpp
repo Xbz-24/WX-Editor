@@ -1,9 +1,14 @@
-//
-// Created by daily on 1/31/24.
-//
+/**
+ * @file FileManagerComponent.hpp
+ * @brief This class is responsible for managing the file system.
+ * @version 0.1
+ * @date 2024-01-31
+ * @Author Renato German Chavez Chicoma
+ */
 #ifndef EDITOR_STATUSBARCOMPONENT_HPP
 #define EDITOR_STATUSBARCOMPONENT_HPP
 #include <wx/wx.h>
+
 class StatusBarComponent
 {
 public:
