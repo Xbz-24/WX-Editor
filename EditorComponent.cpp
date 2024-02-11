@@ -63,10 +63,10 @@ void EditorComponent::InitializeEditor()
 }
 void EditorComponent::BindEditorEvents()
 {
-    m_editor->Bind(wxEVT_STC_UPDATEUI, &EditorComponent::OnEditorUpdate, this);
-    m_editor->Bind(wxEVT_LEFT_DOWN, &EditorComponent::OnMarginLeftDown, this);
-    m_editor->Bind(wxEVT_LEFT_UP, &EditorComponent::OnMarginLeftUp, this);
-    m_editor->Bind(wxEVT_MOTION, &EditorComponent::OnMarginMotion, this);
+    m_editor->Bind(Constants::EVT_UPDATE_UI, &EditorComponent::OnEditorUpdate, this);
+    m_editor->Bind(Constants::EVT_LEFT_DOWN, &EditorComponent::OnMarginLeftDown, this);
+    m_editor->Bind(Constants::EVT_LEFT_UP, &EditorComponent::OnMarginLeftUp, this);
+    m_editor->Bind(Constants::EVT_MOTION, &EditorComponent::OnMarginMotion, this);
 }
 void EditorComponent::ApplyStyles(bool isDarkMode)
 {
