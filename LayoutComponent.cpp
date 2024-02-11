@@ -28,6 +28,7 @@ void LayoutComponent::SetupLayout()
         toolbarSizer->Add(button,0,wxALL,5);
     }
 
+
     mainSizer->Add(toolbarSizer, 0, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, 5);
     auto* editorSizer = new wxBoxSizer(wxHORIZONTAL);
     auto* fileSelectionCtrl = new wxGenericDirCtrl(m_parent, wxID_ANY);
@@ -40,6 +41,8 @@ void LayoutComponent::SetupLayout()
     }
     editorSizer->Add(m_editorComponent->GetEditor(), 3,wxEXPAND,0);
     mainSizer->Add(editorSizer, 2, wxEXPAND, 0);
+    //TODO: make the terminalCtrl a separate component
+    //TODO: make terminalCtrl be a entire shell/terminal emulator
     auto* terminalCtrl = new wxTextCtrl(m_parent, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
     mainSizer->Add(terminalCtrl, 1, wxEXPAND | wxALL, 0);
     m_parent->SetSizer(mainSizer);
