@@ -43,6 +43,7 @@ namespace Constants
     const wxPoint OPEN_BUTTON_POSITION(100,300);
     const wxString SAVE_BUTTON_LABEL = "Save";
     const wxString OPEN_BUTTON_LABEL = "Open";
+    const int ZOOM_LEVEL = 100;
 
     namespace LightTheme
     {

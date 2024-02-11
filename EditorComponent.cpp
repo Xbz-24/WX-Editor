@@ -55,7 +55,7 @@ void EditorComponent::SetupEditorAutoCompletion()
 }
 void EditorComponent::InitializeEditor()
 {
-    m_editor->SetZoom(100);
+    m_editor->SetZoom(Constants::ZOOM_LEVEL);
     SetupEditorStyles();
     SetupEditorMargins();
     SetupEditorAutoCompletion();
