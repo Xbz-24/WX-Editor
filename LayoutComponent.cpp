@@ -16,23 +16,33 @@ LayoutComponent::LayoutComponent(wxWindow *parent, EditorComponent * editorCompo
 }
 void LayoutComponent::SetupLayout()
 {
-    auto* vbox = new wxBoxSizer(wxVERTICAL);
-    auto* hbox = new wxBoxSizer(wxHORIZONTAL);
-    vbox->Add(hbox,0,wxEXPAND | wxALL, 5);
+    auto* mainSizer = new wxBoxSizer(wxVERTICAL);
+    auto* toolbarSizer = new wxBoxSizer(wxHORIZONTAL);
+
     for(auto* button : m_buttons)
     {
         if(button == nullptr)
         {
             throw std::runtime_error("Button is null, LayoutComponent.cpp");
         }
-        hbox->Add(button);
+        toolbarSizer->Add(button,0,wxALL,5);
     }
+
+    mainSizer->Add(toolbarSizer, 0, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, 5);
+    auto* editorSizer = new wxBoxSizer(wxHORIZONTAL);
+    auto* fileSelectionCtrl = new wxGenericDirCtrl(m_parent, wxID_ANY);
+
+    editorSizer->Add(fileSelectionCtrl, 1, wxEXPAND | wxALL, 0);
+
     if(m_editorComponent->GetEditor() == nullptr)
     {
          throw std::runtime_error("Editor is null");
     }
-    vbox->Add(m_editorComponent->GetEditor(),1, wxEXPAND);
-    m_parent->SetSizer(vbox);
+    editorSizer->Add(m_editorComponent->GetEditor(), 3,wxEXPAND,0);
+    mainSizer->Add(editorSizer, 2, wxEXPAND, 0);
+    auto* terminalCtrl = new wxTextCtrl(m_parent, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
+    mainSizer->Add(terminalCtrl, 1, wxEXPAND | wxALL, 0);
+    m_parent->SetSizer(mainSizer);
     m_parent->Layout();
 }
 void LayoutComponent::setButtons(const std::vector<wxButton *> &buttons)
