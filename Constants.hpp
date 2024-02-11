@@ -50,6 +50,7 @@ namespace Constants
     const int C_PREPROCESSOR_STYLE = wxSTC_C_PREPROCESSOR;
     const int C_IDENTIFIER_STYLE = wxSTC_C_IDENTIFIER;
     const int C_NUMBER_STYLE = wxSTC_C_NUMBER;
+    const int C_CHARACTER_STYLE = wxSTC_C_CHARACTER;
 
     namespace LightTheme
     {
