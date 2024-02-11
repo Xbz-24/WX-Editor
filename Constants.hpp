@@ -51,6 +51,7 @@ namespace Constants
     const int C_IDENTIFIER_STYLE = wxSTC_C_IDENTIFIER;
     const int C_NUMBER_STYLE = wxSTC_C_NUMBER;
     const int C_CHARACTER_STYLE = wxSTC_C_CHARACTER;
+    const int C_WORD_STYLE = wxSTC_C_WORD;
 
     namespace LightTheme
     {
