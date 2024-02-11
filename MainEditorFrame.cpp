@@ -1,4 +1,13 @@
+/**
+ * @file MainEditorFrame.cpp
+ * @brief This class is responsible for initializing the main frame of the application.
+ * @version 0.1
+ * @date 2024-01-31
+ * @Author Renato German Chavez Chicoma
+ */
+
 #include "MainEditorFrame.hpp"
+
 MainEditorFrame::MainEditorFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
 :   wxFrame(nullptr, wxID_ANY, title, pos, size),
     m_timer(this),
