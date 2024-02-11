@@ -1,6 +1,10 @@
-//
-// Created by daily on 1/30/24.
-//
+/**
+ * @file fileOperations.hpp
+ * @brief This class is responsible for managing the file system.
+ * @version 0.1
+ * @date 2024-01-30
+ * @Author Renato German Chavez Chicoma
+ */
 #ifndef EDITOR_FILEOPERATIONS_HPP
 #define EDITOR_FILEOPERATIONS_HPP
 #include <wx/wx.h>
@@ -9,6 +13,7 @@
 #include <wx/wfstream.h>
 #include <wx/filename.h>
 #include "ToolbarComponent.hpp"
+
 class FileOperations
 {
 public:
