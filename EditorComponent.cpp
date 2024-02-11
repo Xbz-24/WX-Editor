@@ -82,7 +82,7 @@ void EditorComponent::OnMarginLeftDown(wxMouseEvent& event)
 {
     int x = event.GetX();
     int marginWidth = m_editor->GetMarginWidth(0);
-    if (!m_draggingMargin && x >= marginWidth - 12 && x <= marginWidth + 12)
+    if (!m_draggingMargin && x >= marginWidth - Constants::MINIMUM_WIDTH_MARGIN_DRAGGING && x <= marginWidth + Constants::MINIMUM_WIDTH_MARGIN_DRAGGING)
     {
         m_draggingMargin = true;
         if (wxWindow::GetCapture() != m_editor)
@@ -97,7 +97,7 @@ void EditorComponent::OnMarginMotion(wxMouseEvent& event)
 {
     int x = event.GetX();
     int marginWidth = m_editor->GetMarginWidth(0);
-    if (x >= marginWidth - 12 && x <= marginWidth + 12)
+    if (x >= marginWidth - Constants::MINIMUM_WIDTH_MARGIN_DRAGGING && x <= marginWidth + Constants::MINIMUM_WIDTH_MARGIN_DRAGGING)
     {
         m_editor->SetCursor(wxCursor(wxCURSOR_SIZEWE));
     }
