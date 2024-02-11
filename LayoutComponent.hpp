@@ -10,6 +10,7 @@
 #include <wx/wx.h>
 #include "EditorComponent.hpp"
 #include "ToolbarComponent.hpp"
+#include "wx/generic/dirctrlg.h"
 class LayoutComponent
 {
 public:
