@@ -52,7 +52,7 @@ namespace Constants
     const int C_NUMBER_STYLE = wxSTC_C_NUMBER;
     const int C_CHARACTER_STYLE = wxSTC_C_CHARACTER;
     const int C_KEYWORD_STYLE = wxSTC_C_WORD;
-    const int C_EXTRA_KEYWORD_STYLE = wxSTC_C_WORD;
+    const int C_EXTRA_KEYWORD_STYLE = wxSTC_C_WORD2;
     const int C_MULTI_LINED_COMMENT_STYLE = wxSTC_C_COMMENT;
     const int C_SINGLE_LINE_COMMENT_STYLE = wxSTC_C_COMMENTLINE;
     const int C_COMMENT_DOCUMENTATION_STYLE = wxSTC_C_COMMENTDOC;
