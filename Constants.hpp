@@ -46,6 +46,7 @@ namespace Constants
     const int ZOOM_LEVEL = 100;
     const int EDITOR_MARGIN_WIDTH_PIXELS = 150;
     const int MINIMUM_WIDTH_MARGIN_DRAGGING = 12;
+    const int C_STRING_STYLE = wxSTC_C_STRING;
 
     namespace LightTheme
     {
