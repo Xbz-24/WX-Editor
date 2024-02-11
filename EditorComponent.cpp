@@ -23,7 +23,7 @@ void EditorComponent::SetupEditorStyles()
     m_editor->StyleSetForeground(Constants::C_CHARACTER_STYLE, Constants::COLOR_CHARACTER);
     m_editor->StyleSetForeground(Constants::C_KEYWORD_STYLE, Constants::COLOR_WORD);
     m_editor->StyleSetForeground(Constants::C_EXTRA_KEYWORD_STYLE, Constants::COLOR_WORD2);
-    m_editor->StyleSetForeground(wxSTC_C_COMMENT, Constants::COLOR_COMMENT);
+    m_editor->StyleSetForeground(Constants::C_COMMENT_STYLE, Constants::COLOR_COMMENT);
     m_editor->StyleSetForeground(wxSTC_C_COMMENTLINE, Constants::COLOR_COMMENT_LINE);
     m_editor->StyleSetForeground(wxSTC_C_COMMENTDOC, Constants::COLOR_COMMENT_DOC);
     m_editor->StyleSetForeground(wxSTC_C_OPERATOR, Constants::COLOR_OPERATOR);
