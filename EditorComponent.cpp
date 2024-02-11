@@ -34,7 +34,7 @@ void EditorComponent::SetupEditorStyles()
 }
 void EditorComponent::SetupEditorMargins() {
     m_editor->SetMarginType(0, wxSTC_MARGIN_NUMBER);
-    m_editor->SetMarginWidth(0, 150);
+    m_editor->SetMarginWidth(0, Constants::EDITOR_MARGIN_WIDTH_PIXELS);
     m_editor->SetMarginSensitive(1, true);
     m_editor->SetMarginType(1, Constants::MARGIN_SYMBOL_TYPE);
     m_editor->SetMarginWidth(1, Constants::MARGIN_WIDTH);
@@ -82,7 +82,7 @@ void EditorComponent::OnMarginLeftDown(wxMouseEvent& event)
 {
     int x = event.GetX();
     int marginWidth = m_editor->GetMarginWidth(0);
-    if (!m_draggingMargin && x >= marginWidth - 12 && x <= marginWidth + 12)
+    if (!m_draggingMargin && x >= marginWidth - Constants::MINIMUM_WIDTH_MARGIN_DRAGGING && x <= marginWidth + Constants::MINIMUM_WIDTH_MARGIN_DRAGGING)
     {
         m_draggingMargin = true;
         if (wxWindow::GetCapture() != m_editor)
@@ -97,7 +97,7 @@ void EditorComponent::OnMarginMotion(wxMouseEvent& event)
 {
     int x = event.GetX();
     int marginWidth = m_editor->GetMarginWidth(0);
-    if (x >= marginWidth - 12 && x <= marginWidth + 12)
+    if (x >= marginWidth - Constants::MINIMUM_WIDTH_MARGIN_DRAGGING && x <= marginWidth + Constants::MINIMUM_WIDTH_MARGIN_DRAGGING)
     {
         m_editor->SetCursor(wxCursor(wxCURSOR_SIZEWE));
     }
