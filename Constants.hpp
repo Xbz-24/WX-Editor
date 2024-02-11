@@ -67,6 +67,8 @@ namespace Constants
     constexpr int DEFAULT_EDITOR_FONT_SIZE = 10;
     const wxFontFamily DEFAULT_EDITOR_FONT_FAMILY = wxFONTFAMILY_MODERN;
     const wxFontStyle DEFAULT_EDITOR_FONT_STYLE = wxFONTSTYLE_NORMAL;
+    constexpr wxFontWeight DEFAULT_EDITOR_FONT_WEIGHT = wxFONTWEIGHT_NORMAL;
+
 
     namespace LightTheme
     {
