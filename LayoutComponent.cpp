@@ -1,7 +1,12 @@
-//
-// Created by daily on 1/31/24.
-//
+/**
+ * @file LayoutComponent.cpp
+ * @brief This class is responsible for setting up the layout of the editor.
+ * @version 0.1
+ * @date 2024-01-31
+ * @Author Renato German Chavez Chicoma
+ */
 #include "LayoutComponent.hpp"
+
 LayoutComponent::LayoutComponent(wxWindow *parent, EditorComponent * editorComponent, const std::vector<wxButton *> &buttons)
 :   m_parent(parent),
     m_editorComponent(editorComponent),

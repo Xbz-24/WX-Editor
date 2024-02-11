@@ -3,7 +3,7 @@
  * @brief This file contains the constants used in the application
  * @version 0.1
  * @date 2021-12-23
- * @author daily
+ * @author Renato German Chavez Chicoma
  */
 #ifndef EDITOR_CONSTANTS_HPP
 #define EDITOR_CONSTANTS_HPP

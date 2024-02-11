@@ -1,6 +1,10 @@
-//
-// Created by daily on 1/30/24.
-//
+/**
+ * @file MainEditorFrame.hpp
+ * @brief This class is responsible for managing the main frame of the application.
+ * @version 0.1
+ * @date 2024-01-30
+ * @Author Renato German Chavez Chicoma
+ */
 #ifndef EDITOR_MAINEDITORFRAME_HPP
 #define EDITOR_MAINEDITORFRAME_HPP
 #include <wx/wx.h>
@@ -18,6 +22,7 @@
 #include "FileOperations.hpp"
 #include "LayoutComponent.hpp"
 #include "StatusBarComponent.hpp"
+
 class MainEditorFrame : public wxFrame
 {
 private:

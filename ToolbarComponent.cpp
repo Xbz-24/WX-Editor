@@ -1,8 +1,14 @@
-//
-// Created by daily on 1/30/24.
-//
+/**
+ * @file ToolbarComponent.hpp
+ * @brief This class is responsible for managing the toolbar of the editor.
+ * @version 0.1
+ * @date 2024-01-30
+ * @Author Renato German Chavez Chicoma
+ */
+
 #include "ToolbarComponent.hpp"
 #include "Constants.hpp"
+
 ToolbarComponent::ToolbarComponent(wxWindow *parent)
     : m_parent(parent)
 {
