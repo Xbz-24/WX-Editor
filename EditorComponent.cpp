@@ -19,7 +19,7 @@ void EditorComponent::SetupEditorStyles()
     m_editor->StyleSetForeground(Constants::C_STRING_STYLE, Constants::COLOR_STRING);
     m_editor->StyleSetForeground(Constants::C_PREPROCESSOR_STYLE, Constants::COLOR_PREPROCESSOR);
     m_editor->StyleSetForeground(Constants::C_IDENTIFIER_STYLE, Constants::COLOR_IDENTIFIER);
-    m_editor->StyleSetForeground(wxSTC_C_NUMBER, Constants::COLOR_NUMBER);
+    m_editor->StyleSetForeground(Constants::C_NUMBER_STYLE, Constants::COLOR_NUMBER);
     m_editor->StyleSetForeground(wxSTC_C_CHARACTER, Constants::COLOR_CHARACTER);
     m_editor->StyleSetForeground(wxSTC_C_WORD, Constants::COLOR_WORD);
     m_editor->StyleSetForeground(wxSTC_C_WORD2, Constants::COLOR_WORD2);
