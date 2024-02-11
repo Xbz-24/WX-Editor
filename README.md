@@ -6,6 +6,9 @@ wxEditor is a lightweight, cross-platform text editor designed for basic code ed
 
 ![image](https://github.com/Xbz-24/editor-wx/assets/68678258/75d73f0c-b439-43f0-a2fd-811c355a2e3c)
 
+![image](https://github.com/Xbz-24/WX-Editor/assets/68678258/2c9f9e4a-7ac2-417f-8421-c5f4a8ae9cf1)
+
+
 
 ## Features
 - Basic text editing capabilities
