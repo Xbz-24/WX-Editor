@@ -2,7 +2,7 @@
  * @file constants.hpp
  * @brief This file contains the constants used in the application
  * @version 0.1
- * @date 2021-12-23
+ * @date 2023-12-23
  * @author Renato German Chavez Chicoma
  */
 #ifndef EDITOR_CONSTANTS_HPP
@@ -13,7 +13,7 @@
 #include <wx/stc/stc.h>
 namespace Constants
 {
-    const int LEXER_CPP = wxSTC_LEX_CPP;
+    constexpr int LEXER_CPP = wxSTC_LEX_CPP;
     const wxColour COLOR_STRING(150, 0 ,0);
     const wxColour COLOR_PREPROCESSOR(165,105,0);
     const wxColour COLOR_IDENTIFIER(40,0,60);
@@ -27,12 +27,12 @@ namespace Constants
     const wxColour COLOR_OPERATOR(0,0,200);
     const wxString EDITOR_KEYWORDS = "return int float double char if else while for break continue switch case default";
     const wxString AUTO_COMP_KEYWORDS = "int char float double";
-    const bool STYLE_BOLD = true;
-    const int MARGIN_NUMBER_TYPE = wxSTC_MARGIN_NUMBER;
-    const int MARGIN_SYMBOL_TYPE = wxSTC_MARGIN_SYMBOL;
-    const int MARGIN_WIDTH = 16;
-    const int MARKER_FOLDER = wxSTC_MARKNUM_FOLDER;
-    const int MARKER_FOLDER_OPEN = wxSTC_MARKNUM_FOLDEROPEN;
+    constexpr bool STYLE_BOLD = true;
+    constexpr int MARGIN_NUMBER_TYPE = wxSTC_MARGIN_NUMBER;
+    constexpr int MARGIN_SYMBOL_TYPE = wxSTC_MARGIN_SYMBOL;
+    constexpr int MARGIN_WIDTH = 16;
+    constexpr int MARKER_FOLDER = wxSTC_MARKNUM_FOLDER;
+    constexpr int MARKER_FOLDER_OPEN = wxSTC_MARKNUM_FOLDEROPEN;
     const wxPoint SAVE_BUTTON_POSITION(10,300);
     const wxPoint OPEN_BUTTON_POSITION(100,300);
     const wxString SAVE_BUTTON_LABEL = "Save";
