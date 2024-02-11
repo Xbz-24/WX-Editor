@@ -1,17 +1,18 @@
-//
-// Created by daily on 1/30/24.
-//
-
+/**
+ * @file EditorComponent.cpp
+ * @brief This file contains the implementation of the EditorComponent class
+ * @version 0.1
+ * @date 2024-01-30
+ * @author Renato Chavez Chicoma German
+ */
 #include "EditorComponent.hpp"
-#include "constants.hpp"
+#include "Constants.hpp"
 
 EditorComponent::EditorComponent(wxWindow *parent, wxFrame* frame)
 : m_editor(new wxStyledTextCtrl(parent, wxID_ANY)),
     m_frame(frame)
 {
-
 }
-
 void EditorComponent::SetupEditorStyles()
 {
     m_editor->SetLexer(Constants::LEXER_CPP);
@@ -68,7 +69,6 @@ void EditorComponent::BindEditorEvents()
 }
 void EditorComponent::ApplyStyles(bool isDarkMode)
 {
-
 }
 void EditorComponent::OnEditorUpdate(wxCommandEvent &event)
 {

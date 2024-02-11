@@ -1,6 +1,10 @@
-//
-// Created by daily on 1/30/24.
-//
+/**
+ * @file EditorComponent.hpp
+ * @brief This file contains the declaration of the EditorComponent class
+ * @version 0.1
+ * @date 2024-01-30
+ * @author Renato Chavez Chicoma German
+ */
 #ifndef EDITOR_EDITORCOMPONENT_HPP
 #define EDITOR_EDITORCOMPONENT_HPP
 #include <wx/stc/stc.h>

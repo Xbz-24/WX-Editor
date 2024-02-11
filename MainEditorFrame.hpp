@@ -7,7 +7,7 @@
 #include <wx/stc/stc.h>
 #include <wx/button.h>
 #include <wx/wfstream.h>
-#include "constants.hpp"
+#include "Constants.hpp"
 #include "FindDialog.hpp"
 #include <wx/filename.h>
 #include <wx/timer.h>

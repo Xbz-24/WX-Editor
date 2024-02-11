@@ -12,7 +12,7 @@ include(${wxWidgets_USE_FILE})
 add_executable(
         editor
         MainEditorFrame.cpp
-        constants.hpp
+        Constants.hpp
         FindDialog.hpp
         FindDialog.cpp
         FileOperations.cpp

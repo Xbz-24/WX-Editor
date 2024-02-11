@@ -1,18 +1,20 @@
-//
-// Created by daily on 21-12-23.
-//
+/**
+ * @file constants.hpp
+ * @brief This file contains the constants used in the application
+ * @version 0.1
+ * @date 2021-12-23
+ * @author daily
+ */
 #ifndef EDITOR_CONSTANTS_HPP
 #define EDITOR_CONSTANTS_HPP
 #include <wx/colour.h>
 #include <wx/string.h>
 #include <wx/gdicmn.h>
 #include <wx/stc/stc.h>
-
 namespace Constants
 {
     // Lexer
     const int LEXER_CPP = wxSTC_LEX_CPP;
-
     // Color constants
     const wxColour COLOR_STRING(150, 0 ,0);
     const wxColour COLOR_PREPROCESSOR(165,105,0);
@@ -25,21 +27,17 @@ namespace Constants
     const wxColour COLOR_COMMENT_LINE(150, 150, 150);
     const wxColour COLOR_COMMENT_DOC(150, 150, 150);
     const wxColour COLOR_OPERATOR(0,0,200);
-
     // Editor keywords
     const wxString EDITOR_KEYWORDS = "return int float double char if else while for break continue switch case default";
     const wxString AUTO_COMP_KEYWORDS = "int char float double";
-
     // Style constants
     const bool STYLE_BOLD = true;
-
     // Margin and marker constants
     const int MARGIN_NUMBER_TYPE = wxSTC_MARGIN_NUMBER;
     const int MARGIN_SYMBOL_TYPE = wxSTC_MARGIN_SYMBOL;
     const int MARGIN_WIDTH = 16;
     const int MARKER_FOLDER = wxSTC_MARKNUM_FOLDER;
     const int MARKER_FOLDER_OPEN = wxSTC_MARKNUM_FOLDEROPEN;
-
     // Button constants
     const wxPoint SAVE_BUTTON_POSITION(10,300);
     const wxPoint OPEN_BUTTON_POSITION(100,300);
@@ -61,7 +59,7 @@ namespace Constants
         const wxColour COLOR_OPERATOR(0, 0, 200);
         const wxColour BACKGROUND(255, 255, 255); // white
         const wxColour FOREGROUND(0, 0, 0); // black
-    };
+    }
     namespace DarkTheme
     {
         const wxColour COLOR_STRING(139, 233, 253);
@@ -77,8 +75,7 @@ namespace Constants
         const wxColour COLOR_OPERATOR(248, 248, 242);
         const wxColour BACKGROUND(40, 42, 54); // dark
         const wxColour FOREGROUND(248, 248, 242); //white
-    };
-
+    }
     struct ThemeSettings
     {
         wxColour colorString;
@@ -95,7 +92,6 @@ namespace Constants
         wxColour background;
         wxColour foreground;
     };
-
     inline ThemeSettings GetThemeSettings(bool isDarkMode)
     {
         if(!isDarkMode)
