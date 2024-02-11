@@ -56,6 +56,7 @@ namespace Constants
     const int C_MULTI_LINED_COMMENT_STYLE = wxSTC_C_COMMENT;
     const int C_SINGLE_LINE_COMMENT_STYLE = wxSTC_C_COMMENTLINE;
     const int C_COMMENT_DOCUMENTATION_STYLE = wxSTC_C_COMMENTDOC;
+    const int C_OPERATOR_STYLE = wxSTC_C_OPERATOR;
 
     namespace LightTheme
     {
