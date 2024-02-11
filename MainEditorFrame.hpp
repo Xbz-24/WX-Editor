@@ -22,6 +22,7 @@
 #include "FileOperations.hpp"
 #include "LayoutComponent.hpp"
 #include "StatusBarComponent.hpp"
+#include <wx/icon.h>
 
 class MainEditorFrame : public wxFrame
 {

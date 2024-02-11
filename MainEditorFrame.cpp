@@ -26,6 +26,7 @@ MainEditorFrame::MainEditorFrame(const wxString& title, const wxPoint& pos, cons
     BindButtonEvents();
     BindEditorEvents();
     LoadLastFile();
+    SetIcon(wxIcon("../assets/icons/logo_hx.png" , wxBITMAP_TYPE_PNG));
 }
 void MainEditorFrame::InitializeFrame()
 {
