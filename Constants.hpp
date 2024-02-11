@@ -45,7 +45,7 @@ namespace Constants
     const wxString OPEN_BUTTON_LABEL = "Open";
     constexpr int ZOOM_LEVEL = 100;
     constexpr int EDITOR_MARGIN_WIDTH_PIXELS = 150;
-    constexpr int MINIMUM_WIDTH_MARGIN_DRAGGING = 12;
+    constexpr int MARGIN_ADJUSTMENT_RANGE = 12;
     constexpr int C_STRING_STYLE = wxSTC_C_STRING;
     constexpr int C_PREPROCESSOR_STYLE = wxSTC_C_PREPROCESSOR;
     constexpr int C_IDENTIFIER_STYLE = wxSTC_C_IDENTIFIER;
@@ -61,6 +61,9 @@ namespace Constants
     const wxEventTypeTag EVT_LEFT_DOWN = wxEVT_LEFT_DOWN;
     const wxEventTypeTag EVT_LEFT_UP = wxEVT_LEFT_UP;
     const wxEventTypeTag EVT_MOTION = wxEVT_MOTION;
+    const wxCursor CURSOR_RESIZE = wxCursor(wxCURSOR_SIZEWE);
+    const wxCursor CURSOR_DEFAULT = wxCursor(wxCURSOR_DEFAULT);
+    constexpr int STATUS_BAR_INDEX = 1;
 
     namespace LightTheme
     {
