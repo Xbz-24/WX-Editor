@@ -65,6 +65,7 @@ namespace Constants
     const wxCursor CURSOR_DEFAULT = wxCursor(wxCURSOR_DEFAULT);
     constexpr int STATUS_BAR_INDEX = 1;
     constexpr int DEFAULT_EDITOR_FONT_SIZE = 10;
+    const wxFontFamily DEFAULT_EDITOR_FONT_FAMILY = wxFONTFAMILY_MODERN;
 
     namespace LightTheme
     {
