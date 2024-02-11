@@ -57,6 +57,7 @@ void EditorComponent::SetupEditorAutoCompletion()
 void EditorComponent::InitializeEditor()
 {
     m_editor->SetZoom(Constants::ZOOM_LEVEL);
+    m_editor->StyleSetFont(wxSTC_STYLE_DEFAULT, wxFont(Constants::DEFAULT_EDITOR_FONT_SIZE, Constants::DEFAULT_EDITOR_FONT_FAMILY, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL));
     SetupEditorStyles();
     SetupEditorMargins();
     SetupEditorAutoCompletion();
@@ -77,20 +78,20 @@ void EditorComponent::OnEditorUpdate(wxCommandEvent &event)
     int col = m_editor->GetColumn(m_editor->GetCurrentPos() + 1);
     wxString status;
     status << "Line: " << line << ", Col: " << col;
-    m_frame->SetStatusText(status, 1);
+    m_frame->SetStatusText(status, Constants::STATUS_BAR_INDEX);
 }
 void EditorComponent::OnMarginLeftDown(wxMouseEvent& event)
 {
     int x = event.GetX();
     int marginWidth = m_editor->GetMarginWidth(0);
-    if (!m_draggingMargin && x >= marginWidth - Constants::MINIMUM_WIDTH_MARGIN_DRAGGING && x <= marginWidth + Constants::MINIMUM_WIDTH_MARGIN_DRAGGING)
+    if (!m_draggingMargin && x >= marginWidth - Constants::MARGIN_ADJUSTMENT_RANGE && x <= marginWidth + Constants::MARGIN_ADJUSTMENT_RANGE)
     {
         m_draggingMargin = true;
         if (wxWindow::GetCapture() != m_editor)
         {
             m_editor->CaptureMouse();
         }
-        m_editor->SetCursor(wxCursor(wxCURSOR_SIZEWE));
+        m_editor->SetCursor(Constants::CURSOR_RESIZE);
     }
     event.Skip();
 }
@@ -98,13 +99,13 @@ void EditorComponent::OnMarginMotion(wxMouseEvent& event)
 {
     int x = event.GetX();
     int marginWidth = m_editor->GetMarginWidth(0);
-    if (x >= marginWidth - Constants::MINIMUM_WIDTH_MARGIN_DRAGGING && x <= marginWidth + Constants::MINIMUM_WIDTH_MARGIN_DRAGGING)
+    if (x >= marginWidth - Constants::MARGIN_ADJUSTMENT_RANGE && x <= marginWidth + Constants::MARGIN_ADJUSTMENT_RANGE)
     {
-        m_editor->SetCursor(wxCursor(wxCURSOR_SIZEWE));
+        m_editor->SetCursor(Constants::CURSOR_RESIZE);
     }
     else
     {
-        m_editor->SetCursor(wxNullCursor);
+        m_editor->SetCursor(Constants::CURSOR_DEFAULT);
     }
     if (m_draggingMargin && event.Dragging())
     {
@@ -121,7 +122,7 @@ void EditorComponent::OnMarginLeftUp(wxMouseEvent& event)
         {
             m_editor->ReleaseMouse();
         }
-        m_editor->SetCursor(wxNullCursor);
+        m_editor->SetCursor(Constants::CURSOR_DEFAULT);
     }
     event.Skip();
 }
