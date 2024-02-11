@@ -48,6 +48,7 @@ namespace Constants
     const int MINIMUM_WIDTH_MARGIN_DRAGGING = 12;
     const int C_STRING_STYLE = wxSTC_C_STRING;
     const int C_PREPROCESSOR_STYLE = wxSTC_C_PREPROCESSOR;
+    const int C_IDENTIFIER_STYLE = wxSTC_C_IDENTIFIER;
 
     namespace LightTheme
     {
