@@ -57,7 +57,16 @@ void EditorComponent::SetupEditorAutoCompletion()
 void EditorComponent::InitializeEditor()
 {
     m_editor->SetZoom(Constants::ZOOM_LEVEL);
-    m_editor->StyleSetFont(wxSTC_STYLE_DEFAULT, wxFont(Constants::DEFAULT_EDITOR_FONT_SIZE, Constants::DEFAULT_EDITOR_FONT_FAMILY, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL));
+    m_editor->StyleSetFont
+    (wxSTC_STYLE_DEFAULT,
+     wxFont
+         (
+         Constants::DEFAULT_EDITOR_FONT_SIZE,
+         Constants::DEFAULT_EDITOR_FONT_FAMILY,
+         Constants::DEFAULT_EDITOR_FONT_STYLE,
+         wxFONTWEIGHT_NORMAL
+         )
+    );
     SetupEditorStyles();
     SetupEditorMargins();
     SetupEditorAutoCompletion();

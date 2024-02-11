@@ -66,6 +66,7 @@ namespace Constants
     constexpr int STATUS_BAR_INDEX = 1;
     constexpr int DEFAULT_EDITOR_FONT_SIZE = 10;
     const wxFontFamily DEFAULT_EDITOR_FONT_FAMILY = wxFONTFAMILY_MODERN;
+    const wxFontStyle DEFAULT_EDITOR_FONT_STYLE = wxFONTSTYLE_NORMAL;
 
     namespace LightTheme
     {
