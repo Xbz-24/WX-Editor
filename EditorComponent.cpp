@@ -64,7 +64,9 @@ void EditorComponent::InitializeEditor()
          Constants::DEFAULT_EDITOR_FONT_SIZE,
          Constants::DEFAULT_EDITOR_FONT_FAMILY,
          Constants::DEFAULT_EDITOR_FONT_STYLE,
-         Constants::DEFAULT_EDITOR_FONT_WEIGHT
+         Constants::DEFAULT_EDITOR_FONT_WEIGHT,
+        false,
+        wxString("Consolas")
          )
     );
     SetupEditorStyles();
