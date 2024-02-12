@@ -15,7 +15,6 @@ namespace Constants
 {
     //TODO: Add comments explaining the purpose and usage context of each group of constants.
     constexpr int LEXER_CPP = wxSTC_LEX_CPP;
-
     //TODO: Define a structured approach or naming convention for color constants.
     //TODO: Add more color constants for extending theme support.
     const wxColour COLOR_STRING(150, 0 ,0);
