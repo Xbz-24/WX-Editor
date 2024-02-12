@@ -19,38 +19,52 @@ MainEditorFrame::MainEditorFrame(const wxString& title, const wxPoint& pos, cons
     //TODO: break down constructor into smaller methods
     //TODO: Update class and method documentation to reflect recent changes
     //TODO: divide this exception into smaller exceptions
-    m_editorComponent = std::make_unique<EditorComponent>(this, this);
-    m_toolbarComponent = std::make_unique<ToolbarComponent>(this);
-    m_fileOperations = std::make_unique<FileOperations>(m_editorComponent->GetEditor(), this);
-    m_layoutComponent = std::make_unique<LayoutComponent>(this, m_editorComponent.get(), m_toolbarComponent->GetButtons());
-    m_statusBarComponent = std::make_unique<StatusBarComponent>(this);
-
+    try
+    {
+        InitializeComponents();
+        InitializeUI();
+    }
+    catch(const std::exception& e)
+    {
+        wxMessageBox("Initialization error" + wxString(e.what()), "Error", wxICON_ERROR);
+    }
     if (!m_editorComponent || !m_toolbarComponent || !m_fileOperations || !m_layoutComponent || !m_statusBarComponent) {
         //TODO: refactor error handling to avoid throwing raw exceptions
         throw std::runtime_error("Component initialization failed");
     }
     //TODO: Evaluate and improve accessibility features (e.g., screen reader compatibility)
     //FIXME: Implement more robust and fail-safe Initialization for editor, toolbar, file operations, layout, and status bar components.
+}
+void MainEditorFrame::InitializeComponents()
+{
+    m_editorComponent = std::make_unique<EditorComponent>(this, this);
+    m_toolbarComponent = std::make_unique<ToolbarComponent>(this);
+    m_fileOperations = std::make_unique<FileOperations>(m_editorComponent->GetEditor(), this);
+    m_layoutComponent = std::make_unique<LayoutComponent>(this, m_editorComponent.get(), m_toolbarComponent->GetButtons());
+    m_statusBarComponent = std::make_unique<StatusBarComponent>(this);
+}
+void MainEditorFrame::InitializeUI()
+{
     InitializeFrame();
     InitializeEditor();
     SetupLayout();
     BindButtonEvents();
     BindEditorEvents();
     LoadLastFile();
-    //TODO: modify to not use static path, but instead use relative path or resource path
-    std::cout << "working dir: " << std::filesystem::current_path() << std::endl;
-    wxImage::AddHandler(new wxPNGHandler);
-    SetIcon(wxIcon("../assets/icons/logo_hx.png" , wxBITMAP_TYPE_PNG));
+    wxInitAllImageHandlers();
+    SetIcon(wxIcon(Constants::MAIN_APP_LOGO_PATH , Constants::MAIN_APP_LOGO_TYPE));
     //TODO: Improve accesibility features (e.g., screen reader compatibility).
 }
-//TODO: Use constant for the status bar fields number
+void MainEditorFrame::SetDefaultStatusText()
+{
+    SetStatusText(Constants::DEFAULT_STATUS_BAR_READY_FIELD_TEXT, Constants::DEFAULT_STATUS_BAR_READY_FIELD_INDEX);
+    SetStatusText(Constants::DEFAULT_STATUS_BAR_LINE_COL_FIELD_TEXT, Constants::DEFAULT_STATUS_BAR_LINE_COL_FIELD_INDEX);
+}
 void MainEditorFrame::InitializeFrame()
 {
-    //TODO: use constant for the status bar, NUMBER is the n of fields
-    CreateStatusBar(3);
+    CreateStatusBar(Constants::STATUS_BAR_NUMBER_OF_FIELDS);
     SetDefaultStatusText();
-    //TODO: Use a constant for the timer interval instead of a hard-coded value.
-    m_timer.Start(1000);
+    m_timer.Start(Constants::TIMER_INTERVAL_STATUS_BAR);
 }
 void MainEditorFrame::InitializeEditor()
 {
@@ -78,15 +92,6 @@ void MainEditorFrame::BindButtonEvents()
         [this](wxCommandEvent& event){ this->OnZoomOut(event); }
     };
     m_toolbarComponent->BindButtonEvents(callbacks);
-}
-void MainEditorFrame::SetDefaultStatusText()
-{
-    //TODO: use constant for the status bar index
-    //TODO: use constant for the default status text
-    SetStatusText("Ready", 0);
-    //TODO: use constant for the status bar index
-    //TODO: use constant for the default status text
-    SetStatusText("Line: 1, Col: 1", 1);
 }
 //FIXME: Implement a more comprehensive error handling if the file operations component is uninitialized.
 void MainEditorFrame::OnSave(wxCommandEvent &event)

@@ -22,7 +22,7 @@ public:
     //TODO: Provide details on what the EditorUpdate method is handling, such as cursor position updates, etc.
     void OnEditorUpdate(wxCommandEvent &event);
     //TODO: Elaborate on the use cases for exposing the wxStyledTextCtrl instance.
-    wxStyledTextCtrl *GetEditor() const;
+    [[nodiscard]] wxStyledTextCtrl *GetEditor() const;
     //TODO: Describe the types of events being bound in this method.
     void BindEditorEvents();
     //TODO: Explain the purpose of these event handlers, particularly the editor margin interactions.
