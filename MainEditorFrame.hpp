@@ -23,6 +23,7 @@
 #include "LayoutComponent.hpp"
 #include "StatusBarComponent.hpp"
 #include <wx/icon.h>
+#include <filesystem>
 
 class MainEditorFrame : public wxFrame
 {
@@ -40,10 +41,15 @@ wxDECLARE_EVENT_TABLE();
     static const int ZOOM_INCREMENT = 12;
     bool m_draggingMargin = false;
 private:
+    //TODO: use unique_ptr for m_editorComponent
     EditorComponent* m_editorComponent;
+    //TODO: use unique_ptr for m_toolbarComponent
     ToolbarComponent* m_toolbarComponent;
+    //TODO: use unique_ptr for m_fileOperations
     FileOperations* m_fileOperations;
+    //TODO: use unique_ptr for m_layoutComponent
     LayoutComponent* m_layoutComponent;
+    //TODO: use unique_ptr for m_statusBarComponent
     StatusBarComponent* m_statusBarComponent;
 public:
     MainEditorFrame(const wxString &title, const wxPoint &pos, const wxSize &size);

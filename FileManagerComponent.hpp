@@ -12,9 +12,13 @@
 class FileManagerComponent
 {
 public:
+    //TODO: Remove unused code
     FileManagerComponent(wxWindow* parent);
+    //TODO: Remove unused code
     wxString LoadLastFilePath();
+    //TODO: Remove unused code
     void SaveLastFilePath(const wxString& path);
+    //TODO: Remove unused code
     ~FileManagerComponent();
 private:
     wxWindow* m_parent;

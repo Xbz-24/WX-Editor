@@ -7,14 +7,17 @@
  */
 #include "EditorComponent.hpp"
 #include "Constants.hpp"
-
+//TODO: Investigate potential memory leaks in editor component
 EditorComponent::EditorComponent(wxWindow *parent, wxFrame* frame)
 : m_editor(new wxStyledTextCtrl(parent, wxID_ANY)),
     m_frame(frame)
 {
+    //TODO: Validate parent and frame pointers for null before proceeding.
 }
 void EditorComponent::SetupEditorStyles()
 {
+    //TODO: Consider adding additional style configurations for extended customization.
+    //FIXME: Verify and handle potential issues with color contrasts, for accessibility.
     m_editor->SetLexer(Constants::LEXER_CPP);
     m_editor->StyleSetForeground(Constants::C_STRING_STYLE, Constants::COLOR_STRING);
     m_editor->StyleSetForeground(Constants::C_PREPROCESSOR_STYLE, Constants::COLOR_PREPROCESSOR);
@@ -34,7 +37,9 @@ void EditorComponent::SetupEditorStyles()
 }
 void EditorComponent::SetupEditorMargins()
 {
+    //TODO: Make margin settings configurable through external settings or user preferences.
     m_editor->SetMarginType(0, wxSTC_MARGIN_NUMBER);
+    //FIXME: Check and handle potential issues when resizing margins in different screen resolutions or window sizes.
     m_editor->SetMarginWidth(0, Constants::EDITOR_MARGIN_WIDTH_PIXELS);
     m_editor->SetMarginSensitive(1, true);
     m_editor->SetMarginType(1, Constants::MARGIN_SYMBOL_TYPE);
@@ -48,6 +53,7 @@ void EditorComponent::SetupEditorMargins()
 }
 void EditorComponent::SetupEditorAutoCompletion()
 {
+    //TODO: Expand the auto-completion feature to include more language constructs or user-defined snippets.
     m_editor->AutoCompSetSeparator(' ');
     m_editor->AutoCompSetIgnoreCase(true);
     m_editor->AutoCompSetAutoHide(false);
@@ -56,6 +62,7 @@ void EditorComponent::SetupEditorAutoCompletion()
 }
 void EditorComponent::InitializeEditor()
 {
+    //TODO: Implement user settings for initial zoom level and default font settings.
     m_editor->SetZoom(Constants::ZOOM_LEVEL);
     m_editor->StyleSetFont
     (wxSTC_STYLE_DEFAULT,
@@ -75,6 +82,7 @@ void EditorComponent::InitializeEditor()
 }
 void EditorComponent::BindEditorEvents()
 {
+    //TODO: Evaluate the adition of more editor events for enhanced functionality, like text change monitoring for example.
     m_editor->Bind(Constants::EVT_UPDATE_UI, &EditorComponent::OnEditorUpdate, this);
     m_editor->Bind(Constants::EVT_LEFT_DOWN, &EditorComponent::OnMarginLeftDown, this);
     m_editor->Bind(Constants::EVT_LEFT_UP, &EditorComponent::OnMarginLeftUp, this);
@@ -82,9 +90,11 @@ void EditorComponent::BindEditorEvents()
 }
 void EditorComponent::ApplyStyles(bool isDarkMode)
 {
+    //TODO: Implement the logic for applying different styles based on the isDarkMode parameter.
 }
 void EditorComponent::OnEditorUpdate(wxCommandEvent &event)
 {
+    //TODO: Optimize status text update for performance, especially for large documents.
     int line = m_editor->GetCurrentLine() + 1;
     int col = m_editor->GetColumn(m_editor->GetCurrentPos() + 1);
     wxString status;
@@ -93,6 +103,8 @@ void EditorComponent::OnEditorUpdate(wxCommandEvent &event)
 }
 void EditorComponent::OnMarginLeftDown(wxMouseEvent& event)
 {
+    //TODO: Refine margin dragging logic for smoother user interaction.
+    //FIXME: Address potential issues with margin resizing on different platforms or window managers.
     int x = event.GetX();
     int marginWidth = m_editor->GetMarginWidth(0);
     if (!m_draggingMargin && x >= marginWidth - Constants::MARGIN_ADJUSTMENT_RANGE && x <= marginWidth + Constants::MARGIN_ADJUSTMENT_RANGE)
@@ -108,6 +120,8 @@ void EditorComponent::OnMarginLeftDown(wxMouseEvent& event)
 }
 void EditorComponent::OnMarginMotion(wxMouseEvent& event)
 {
+    //TODO: Refine margin dragging logic for smoother user interaction.
+    //FIXME: Address potential issues with margin resizing on different platforms or window managers.
     int x = event.GetX();
     int marginWidth = m_editor->GetMarginWidth(0);
     if (x >= marginWidth - Constants::MARGIN_ADJUSTMENT_RANGE && x <= marginWidth + Constants::MARGIN_ADJUSTMENT_RANGE)
@@ -127,6 +141,8 @@ void EditorComponent::OnMarginMotion(wxMouseEvent& event)
 }
 void EditorComponent::OnMarginLeftUp(wxMouseEvent& event)
 {
+    //TODO: Refine margin dragging logic for smoother user interaction.
+    //FIXME: Address potential issues with margin resizing on different platforms or window managers.
     if(m_draggingMargin){
         m_draggingMargin = false;
         if(m_editor->HasCapture())
@@ -137,6 +153,9 @@ void EditorComponent::OnMarginLeftUp(wxMouseEvent& event)
     }
     event.Skip();
 }
+
+//TODO: Implement additional utility methods for editor operations (e.g., clear, reset, load file, etc.).
+
 wxStyledTextCtrl *EditorComponent::GetEditor() const
 {
     return m_editor;
