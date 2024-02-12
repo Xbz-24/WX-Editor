@@ -68,6 +68,14 @@ namespace Constants
     constexpr wxFontWeight DEFAULT_EDITOR_FONT_WEIGHT = wxFONTWEIGHT_NORMAL;
     constexpr int DEFAULT_EDITOR_FONT_UNDERLINE = 0;
     const wxString DEFAULT_EDITOR_FONT_FACE = wxString("Consolas");
+    constexpr int STATUS_BAR_NUMBER_OF_FIELDS = 3;
+    constexpr int TIMER_INTERVAL_STATUS_BAR = 1000;
+    const std::string DEFAULT_STATUS_BAR_READY_FIELD_TEXT = "Ready";
+    constexpr int DEFAULT_STATUS_BAR_READY_FIELD_INDEX = 0;
+    const std::string DEFAULT_STATUS_BAR_LINE_COL_FIELD_TEXT = "Line: 1, Col: 1";
+    constexpr int DEFAULT_STATUS_BAR_LINE_COL_FIELD_INDEX = 1;
+    const std::string MAIN_APP_LOGO_PATH = "../assets/icons/logo_hx.png";
+    const wxBitmapType MAIN_APP_LOGO_TYPE = wxBITMAP_TYPE_PNG;
     //TODO: Investigate and implement the possibility of making theme settings dynamic and customizable with the use of a configuration file or settings dialog.
     namespace LightTheme
     {

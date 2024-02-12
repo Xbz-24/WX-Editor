@@ -62,5 +62,8 @@ public:
     void BindButtonEvents();
     void BindEditorEvents();
     void LoadLastFile();
+private:
+    void InitializeComponents();
+    void InitializeUI();
 };
 #endif //EDITOR_MAINEDITORFRAME_HPP
