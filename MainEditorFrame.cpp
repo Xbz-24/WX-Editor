@@ -5,7 +5,6 @@
  * @date 2024-01-31
  * @Author Renato German Chavez Chicoma
  */
-
 //TODO: Evaluate and refactor to adhere to MVC/MVVM patterns for better separation of concerns.
 #include "MainEditorFrame.hpp"
 
@@ -14,17 +13,18 @@
 //TODO: Review and update code to meet C++17 standards
 MainEditorFrame::MainEditorFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
 :   wxFrame(nullptr, wxID_ANY, title, pos, size),
-    m_timer(this),
-    m_editorComponent(new EditorComponent(this, this)),
-    m_toolbarComponent(new ToolbarComponent(this)),
-    m_fileOperations(new FileOperations(m_editorComponent->GetEditor(), this)),
-    m_layoutComponent(new LayoutComponent(this, m_editorComponent, m_toolbarComponent->GetButtons())),
-    m_statusBarComponent(new StatusBarComponent(this))
+    m_timer(this)
 {
     //TODO: Refactor this constructor to adhere to SRP by breaking down into smaller methods
     //TODO: break down constructor into smaller methods
     //TODO: Update class and method documentation to reflect recent changes
     //TODO: divide this exception into smaller exceptions
+    m_editorComponent = std::make_unique<EditorComponent>(this, this);
+    m_toolbarComponent = std::make_unique<ToolbarComponent>(this);
+    m_fileOperations = std::make_unique<FileOperations>(m_editorComponent->GetEditor(), this);
+    m_layoutComponent = std::make_unique<LayoutComponent>(this, m_editorComponent.get(), m_toolbarComponent->GetButtons());
+    m_statusBarComponent = std::make_unique<StatusBarComponent>(this);
+
     if (!m_editorComponent || !m_toolbarComponent || !m_fileOperations || !m_layoutComponent || !m_statusBarComponent) {
         //TODO: refactor error handling to avoid throwing raw exceptions
         throw std::runtime_error("Component initialization failed");

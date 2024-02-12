@@ -28,29 +28,15 @@
 class MainEditorFrame : public wxFrame
 {
 private:
-    wxButton *saveButton;
-    wxButton *openButton;
-    wxButton *newFileButton;
-    wxButton *toggleDarkModeButton;
-    wxButton *findButton;
-    wxButton *replaceButton;
     wxTimer m_timer;
 wxDECLARE_EVENT_TABLE();
-    wxButton *zoomInButton;
-    wxButton *zoomOutButton;
     static const int ZOOM_INCREMENT = 12;
-    bool m_draggingMargin = false;
 private:
-    //TODO: use unique_ptr for m_editorComponent
-    EditorComponent* m_editorComponent;
-    //TODO: use unique_ptr for m_toolbarComponent
-    ToolbarComponent* m_toolbarComponent;
-    //TODO: use unique_ptr for m_fileOperations
-    FileOperations* m_fileOperations;
-    //TODO: use unique_ptr for m_layoutComponent
-    LayoutComponent* m_layoutComponent;
-    //TODO: use unique_ptr for m_statusBarComponent
-    StatusBarComponent* m_statusBarComponent;
+    std::unique_ptr<EditorComponent> m_editorComponent;
+    std::unique_ptr<ToolbarComponent> m_toolbarComponent;
+    std::unique_ptr<FileOperations> m_fileOperations;
+    std::unique_ptr<LayoutComponent> m_layoutComponent;
+    std::unique_ptr<StatusBarComponent> m_statusBarComponent;
 public:
     MainEditorFrame(const wxString &title, const wxPoint &pos, const wxSize &size);
     void OnSave(wxCommandEvent &event);
@@ -71,17 +57,10 @@ public:
     void OnMarginMotion(wxMouseEvent& event);
     void SetDefaultStatusText();
     void InitializeFrame();
-    void InitializeButtons();
     void InitializeEditor();
     void SetupLayout();
-    void SetupEventBindings();
     void BindButtonEvents();
     void BindEditorEvents();
     void LoadLastFile();
-    void SetupEditorStyles();
-    void SetupEditorMargins();
-    void SetupEditorAutoCompletion();
-    void CreateButtons();
-    wxFrame *GetFrame();
 };
 #endif //EDITOR_MAINEDITORFRAME_HPP
