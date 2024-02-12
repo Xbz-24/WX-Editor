@@ -9,7 +9,7 @@
 #include "Constants.hpp"
 //TODO: Investigate potential memory leaks in editor component
 EditorComponent::EditorComponent(wxWindow *parent, wxFrame* frame)
-: m_editor(new wxStyledTextCtrl(parent, wxID_ANY)),
+:   m_editor(new wxStyledTextCtrl(parent, wxID_ANY)),
     m_frame(frame)
 {
     //TODO: Validate parent and frame pointers for null before proceeding.
@@ -153,9 +153,7 @@ void EditorComponent::OnMarginLeftUp(wxMouseEvent& event)
     }
     event.Skip();
 }
-
 //TODO: Implement additional utility methods for editor operations (e.g., clear, reset, load file, etc.).
-
 wxStyledTextCtrl *EditorComponent::GetEditor() const
 {
     return m_editor;

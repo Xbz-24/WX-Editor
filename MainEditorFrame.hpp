@@ -39,9 +39,6 @@ private:
     std::unique_ptr<StatusBarComponent> m_statusBarComponent;
 public:
     MainEditorFrame(const wxString &title, const wxPoint &pos, const wxSize &size);
-    void OnSave(wxCommandEvent &event);
-    void OnOpen(wxCommandEvent &event);
-    void OnNewFile(wxCommandEvent &event);
     void OnToggleDarkMode(wxCommandEvent &event);
     void ApplyEditorStyles(bool isDarkMode);
     void OnFind(wxCommandEvent& event);
