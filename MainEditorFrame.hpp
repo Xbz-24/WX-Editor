@@ -50,8 +50,8 @@ public:
     void OnTimer(wxTimerEvent& event);
     void OnZoomIn(wxCommandEvent& event);
     void OnZoomOut(wxCommandEvent& event);
-    static void SaveLastFilePath(const wxString& path);
-    static wxString LoadLastFilePath();
+    void SaveLastFilePath(const wxString& path);
+    wxString LoadLastFilePath();
     void OnMarginLeftDown(wxMouseEvent& event);
     void OnMarginLeftUp(wxMouseEvent& event);
     void OnMarginMotion(wxMouseEvent& event);

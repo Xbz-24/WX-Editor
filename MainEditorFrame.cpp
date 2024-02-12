@@ -50,7 +50,6 @@ void MainEditorFrame::InitializeUI()
     SetupLayout();
     BindButtonEvents();
     BindEditorEvents();
-    LoadLastFile();
     wxInitAllImageHandlers();
     SetIcon(wxIcon(Constants::MAIN_APP_LOGO_PATH , Constants::MAIN_APP_LOGO_TYPE));
     //TODO: Improve accesibility features (e.g., screen reader compatibility).
@@ -79,12 +78,17 @@ void MainEditorFrame::BindButtonEvents()
 {
     //FIXME: consider the use of constants for the callbacks indices or button IDs.
     //TODO: simplify this callbacks by the use of a lambda
+
+    if (!m_fileOperations)
+    {
+        throw std::runtime_error("File operations component is uninitialized");
+    }
     std::vector<std::function<void(wxCommandEvent&)>> callbacks =
     {
         //TODO: Consolidate similar event handling methods into a single method to reduce redundancy and improve maintainability.
-        [this](wxCommandEvent& event){ this->OnSave(event); },
-        [this](wxCommandEvent& event){ this->OnOpen(event); },
-        [this](wxCommandEvent& event){ this->OnNewFile(event); },
+        [this](wxCommandEvent& event){ m_fileOperations->OnSave(event); },
+        [this](wxCommandEvent& event){ m_fileOperations->OnOpen(event); },
+        [this](wxCommandEvent& event){ m_fileOperations->OnNewFile(event); },
         [this](wxCommandEvent& event){ this->OnToggleDarkMode(event); },
         [this](wxCommandEvent& event){ this->OnFind(event); },
         [this](wxCommandEvent& event){ this->OnReplace(event); },
@@ -92,23 +96,6 @@ void MainEditorFrame::BindButtonEvents()
         [this](wxCommandEvent& event){ this->OnZoomOut(event); }
     };
     m_toolbarComponent->BindButtonEvents(callbacks);
-}
-//FIXME: Implement a more comprehensive error handling if the file operations component is uninitialized.
-void MainEditorFrame::OnSave(wxCommandEvent &event)
-{
-    if (!m_fileOperations)
-    {
-        throw std::runtime_error("File operations component is uninitialized");
-    }
-    m_fileOperations->OnSave(event);
-}
-void MainEditorFrame::OnOpen(wxCommandEvent &event)
-{
-    m_fileOperations->OnOpen(event);
-}
-void MainEditorFrame::OnNewFile(wxCommandEvent& event)
-{
-    m_fileOperations->OnNewFile(event);
 }
 void MainEditorFrame::OnToggleDarkMode(wxCommandEvent& event)
 {
@@ -131,21 +118,21 @@ void MainEditorFrame::ApplyEditorStyles(bool isDarkMode)
         editor->StyleSetBackground(style, theme.background);
         editor->StyleSetForeground(style, theme.foreground);
     }
-    editor->StyleSetForeground(wxSTC_C_STRING, theme.colorString);
-    editor->StyleSetForeground(wxSTC_C_PREPROCESSOR, theme.colorPreprocessor);
-    editor->StyleSetForeground(wxSTC_C_IDENTIFIER, theme.colorIdentifier);
-    editor->StyleSetForeground(wxSTC_C_NUMBER, theme.colorNumber);
-    editor->StyleSetForeground(wxSTC_C_CHARACTER, theme.colorCharacter);
-    editor->StyleSetForeground(wxSTC_C_WORD, theme.colorWord);
-    editor->StyleSetForeground(wxSTC_C_WORD2, theme.colorWord2);
-    editor->StyleSetForeground(wxSTC_C_COMMENT, theme.colorComment);
-    editor->StyleSetForeground(wxSTC_C_COMMENTLINE, theme.colorCommentLine);
-    editor->StyleSetForeground(wxSTC_C_COMMENTDOC, theme.colorCommentDoc);
-    editor->StyleSetForeground(wxSTC_C_OPERATOR, theme.colorOperator);
+    editor->StyleSetForeground(Constants::C_STRING_STYLE, theme.colorString);
+    editor->StyleSetForeground(Constants::C_PREPROCESSOR_STYLE, theme.colorPreprocessor);
+    editor->StyleSetForeground(Constants::C_IDENTIFIER_STYLE, theme.colorIdentifier);
+    editor->StyleSetForeground(Constants::C_NUMBER_STYLE, theme.colorNumber);
+    editor->StyleSetForeground(Constants::C_CHARACTER_STYLE, theme.colorCharacter);
+    editor->StyleSetForeground(Constants::C_KEYWORD_STYLE, theme.colorWord);
+    editor->StyleSetForeground(Constants::C_EXTRA_KEYWORD_STYLE, theme.colorWord2);
+    editor->StyleSetForeground(Constants::C_MULTI_LINED_COMMENT_STYLE, theme.colorComment);
+    editor->StyleSetForeground(Constants::C_SINGLE_LINE_COMMENT_STYLE, theme.colorCommentLine);
+    editor->StyleSetForeground(Constants::C_COMMENT_DOCUMENTATION_STYLE, theme.colorCommentDoc);
+    editor->StyleSetForeground(Constants::C_OPERATOR_STYLE, theme.colorOperator);
     if (Constants::STYLE_BOLD)
     {
-        editor->StyleSetBold(wxSTC_C_WORD, true);
-        editor->StyleSetBold(wxSTC_C_WORD2, true);
+        editor->StyleSetBold(Constants::C_KEYWORD_STYLE, true);
+        editor->StyleSetBold(Constants::C_EXTRA_KEYWORD_STYLE, true);
     }
     editor->Refresh();
     editor->Update();
@@ -207,22 +194,11 @@ void MainEditorFrame::OnZoomOut(wxCommandEvent& event)
 void MainEditorFrame::SaveLastFilePath(const wxString &path)
 {
     //TODO: Modify file path handling to use relative paths or resource paths instead of static paths.
-    wxFile file("last_file_path.txt", wxFile::write);
-    file.Write(path);
-    file.Close();
+    m_fileOperations->SaveLastFilePath(path);
 }
 wxString MainEditorFrame::LoadLastFilePath()
 {
-    wxString lastPath;
-    //TODO: Modify file path handling to use relative paths or resource paths instead of static paths.
-    wxFile file("last_file_path.txt", wxFile::read);
-    if(file.IsOpened())
-    {
-        file.ReadAll(&lastPath);
-    }
-    file.Close();
-    //TODO: Implement error handling for scenarios where the last file path does not exist or cannot be read/opened.
-    return lastPath;
+    return m_fileOperations->LoadLastFilePath();
 }
 void MainEditorFrame::OnMarginLeftDown(wxMouseEvent& event)
 {
@@ -239,16 +215,6 @@ void MainEditorFrame::OnMarginMotion(wxMouseEvent& event)
 void MainEditorFrame::BindEditorEvents()
 {
     m_editorComponent->BindEditorEvents();
-}
-void MainEditorFrame::LoadLastFile()
-{
-    wxString lastFilePath = LoadLastFilePath();
-    auto *editor = m_editorComponent->GetEditor();
-    if(wxFileExists(lastFilePath) && editor)
-    {
-        editor->LoadFile(lastFilePath);
-        SetStatusText(wxFileNameFromPath(lastFilePath), 0);
-    }
 }
 //TODO: Review event bindings to ensure that all necessary events are covered and properly handled.
 wxBEGIN_EVENT_TABLE(MainEditorFrame, wxFrame)

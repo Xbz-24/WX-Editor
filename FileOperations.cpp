@@ -22,22 +22,35 @@
     }
     //TODO: Unsaved Changes Prompt, Refine the logic for prompting the user to save unsaved changes, ensuring all scenarios are covered.
 }
-//TODO: Remove unused code
-void FileOperations::BindButtonEvents()
-{
-    m_toolbarComponent->GetButtons()[0]->Bind(wxEVT_BUTTON, &FileOperations::OnSave, this);
-    m_toolbarComponent->GetButtons()[1]->Bind(wxEVT_BUTTON, &FileOperations::OnOpen, this);
-    m_toolbarComponent->GetButtons()[2]->Bind(wxEVT_BUTTON, &FileOperations::OnNewFile, this);
-}
 //TODO: Implement logic to save the last file path
 void FileOperations::SaveLastFilePath(const wxString& path)
 {
-     //FIXME: Implement logic to save the last file path
+    wxFile file(LAST_FILE_PATH, wxFile::write);
+    if (!file.IsOpened())
+    {
+        wxLogError("Cannot open file %s for writing.", LAST_FILE_PATH);
+        return;
+    }
+    file.Write(path);
+    file.Close();
 }
 //TODO: Remove unused code
 wxString FileOperations::LoadLastFilePath()
 {
-    return "path";
+    if(!wxFileExists(LAST_FILE_PATH))
+    {
+        return "";
+    }
+    wxFile file(LAST_FILE_PATH, wxFile::read);
+    wxString lastPath;
+    if (!file.IsOpened())
+    {
+        wxLogError("Cannot open file %s for reading.", LAST_FILE_PATH);
+        return "";
+    }
+    file.ReadAll(&lastPath);
+    file.Close();
+    return lastPath;
 }
 //TODO: Implement functionality to check if the file is already saved and skip the save dialog if no changes were made.
 void FileOperations::OnSave(wxCommandEvent& event)
@@ -46,6 +59,10 @@ void FileOperations::OnSave(wxCommandEvent& event)
     {
         //TODO: Enhance error handling to cover failed operations and unexpected scenarios
         throw std::runtime_error("Editor is uninitialized");
+    }
+    if(!m_editor->GetModify())
+    {
+        return;
     }
     //TODO: use constant for file extensions and dialog properties
     wxFileDialog saveFileDialog
@@ -66,6 +83,12 @@ void FileOperations::OnSave(wxCommandEvent& event)
     }
     wxFileName fileName(saveFileDialog.GetPath());
     m_frame->SetStatusText(fileName.GetFullName(), 0);
+    wxStructStat stat;
+    if(wxStat(saveFileDialog.GetPath(), &stat) != 0)
+    {
+        wxLogError("No permission to write to file '%s'.", saveFileDialog.GetPath());
+        return;
+    }
     SaveLastFilePath(saveFileDialog.GetPath());
 }
 //TODO: Enhance error handling to cover failed operations and unexpected scenarios
@@ -82,10 +105,21 @@ void FileOperations::OnOpen(wxCommandEvent& event)
     {
         return;
     }
+    if(!wxFileExists(openFileDialog.GetPath()))
+    {
+        wxLogError("File '%s' does not exist.", openFileDialog.GetPath());
+        return;
+    }
     wxFileInputStream input_stream(openFileDialog.GetPath());
+
     if(!input_stream.IsOk())
     {
         wxLogError("Cannot open file '%s'.", openFileDialog.GetPath());
+        return;
+    }
+    if(input_stream.GetLength() == 0)
+    {
+        wxLogError("File '%s' is empty.", openFileDialog.GetPath());
         return;
     }
     m_editor->LoadFile(openFileDialog.GetPath());
@@ -114,4 +148,5 @@ void FileOperations::OnNewFile(wxCommandEvent& event)
     m_editor->ClearAll();
     m_editor->EmptyUndoBuffer();
     m_frame->SetTitle("wx-editor - New File");
+    m_frame->SetStatusText("New File Created", 0);
 }
