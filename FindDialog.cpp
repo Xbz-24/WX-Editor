@@ -6,14 +6,16 @@
  * @Author Renato German Chavez Chicoma
  */
 #include "FindDialog.hpp"
-
 FindDialog::FindDialog(wxWindow* parent, wxStyledTextCtrl* editor):
     wxDialog(parent, wxID_ANY, "Find", wxDefaultPosition, wxDefaultSize),
     m_editor(editor)
 {
+    //TODO: Implement input validation for editor parameter in the constructor, to avoid null pointer exceptions.
     auto* sizer = new wxBoxSizer(wxVERTICAL);
+    //TODO: Implement option for customization of dialog title and position
     m_findTextCtrl = new wxTextCtrl(this, wxID_ANY);
     sizer->Add(m_findTextCtrl, 0, wxEXPAND | wxALL, 5);
+    //FIXME: Review layout and alignment of buttons, consider using a grid sizer for better alignment.
     auto* buttonSizer = new wxBoxSizer(wxHORIZONTAL);
     m_prevButton = new wxButton(this, wxID_ANY, "Previous");
     m_nextButton = new wxButton(this, wxID_ANY, "Next");
@@ -30,6 +32,7 @@ FindDialog::FindDialog(wxWindow* parent, wxStyledTextCtrl* editor):
 }
 void FindDialog::OnFindNext(wxCommandEvent& event)
 {
+    //FIXME: Handle case sensitivity and whole word matching options in search functionality
     wxString findTerm = m_findTextCtrl->GetValue();
     if(findTerm != m_lastFindTerm)
     {
@@ -38,6 +41,7 @@ void FindDialog::OnFindNext(wxCommandEvent& event)
     }
     if(!findTerm.IsEmpty())
     {
+        //TODO: Add functionality to wrap the search to the beginning of the file when the end is reached.
         m_editor->SetTargetStart(m_lastFindPos);
         m_editor->SetTargetEnd(m_editor->GetLength());
         m_editor->SetSearchFlags(wxSTC_FIND_MATCHCASE);
@@ -50,6 +54,7 @@ void FindDialog::OnFindNext(wxCommandEvent& event)
         }
         else
         {
+            //TODO: Improve the user feedback for when the search term is not found, disabling buttons or changing focus, etc.
             wxMessageBox(_("Specified text not found."), _("Find"), wxOK | wxICON_INFORMATION);
         }
     }
@@ -57,10 +62,12 @@ void FindDialog::OnFindNext(wxCommandEvent& event)
 void FindDialog::OnFindPrevious(wxCommandEvent& event)
 {
     wxString findTerm = m_findTextCtrl->GetValue();
+    //FIXME: Implement reverse search logic to correctly find the previous occurrence of the search term.
     if(findTerm != m_lastFindTerm)
     {
         m_lastFindTerm = findTerm;
         m_lastFindPos = m_editor->GetLength();
+        //TODO: Include options for regular expression search and case sensitivity aswell as pattern matching in search criteria.
     }
     if(!findTerm.IsEmpty())
     {
@@ -70,6 +77,7 @@ void FindDialog::OnFindPrevious(wxCommandEvent& event)
 
         int position = m_editor->SearchInTarget(findTerm);
 
+        //FIXME: Optimize search performance for large files, consider using a more efficient search algorithm.
         if(position != -1)
         {
             m_editor->SetSelection(m_editor->GetTargetStart(), m_editor->GetTargetEnd());
@@ -84,5 +92,6 @@ void FindDialog::OnFindPrevious(wxCommandEvent& event)
 }
 void FindDialog::OnClose(wxCommandEvent& event)
 {
+    //TODO: Ensure that unsaved changes or states are handled properly before closing the dialog.
     this->Destroy();
 }

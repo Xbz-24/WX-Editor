@@ -12,8 +12,11 @@
 class EventBindingComponent
 {
 public:
+    //TODO: Remove unused code
     EventBindingComponent(EditorComponent* editorComponent, wxWindow* parent);
+    //TODO: Remove unused code
     void BindEditorEvents();
+    //TODO: Remove unused code
     ~EventBindingComponent();
 private:
     EditorComponent* m_editorComponent;

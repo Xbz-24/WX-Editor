@@ -7,12 +7,15 @@
  */
 #include "EventBindingComponent.hpp"
 
+//TODO: Remove unused code
 EventBindingComponent::EventBindingComponent(EditorComponent *editorComponent, wxWindow *parent)
 {
 }
+//TODO: Remove unused code
 void EventBindingComponent::BindEditorEvents()
 {
 }
+//TODO: Remove unused code
 EventBindingComponent::~EventBindingComponent()
 {
 }

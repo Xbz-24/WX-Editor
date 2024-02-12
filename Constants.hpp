@@ -13,7 +13,11 @@
 #include <wx/stc/stc.h>
 namespace Constants
 {
+    //TODO: Add comments explaining the purpose and usage context of each group of constants.
     constexpr int LEXER_CPP = wxSTC_LEX_CPP;
+
+    //TODO: Define a structured approach or naming convention for color constants.
+    //TODO: Add more color constants for extending theme support.
     const wxColour COLOR_STRING(150, 0 ,0);
     const wxColour COLOR_PREPROCESSOR(165,105,0);
     const wxColour COLOR_IDENTIFIER(40,0,60);
@@ -64,6 +68,7 @@ namespace Constants
     constexpr wxFontWeight DEFAULT_EDITOR_FONT_WEIGHT = wxFONTWEIGHT_NORMAL;
     constexpr int DEFAULT_EDITOR_FONT_UNDERLINE = 0;
     const wxString DEFAULT_EDITOR_FONT_FACE = wxString("Consolas");
+    //TODO: Investigate and implement the possibility of making theme settings dynamic and customizable with the use of a configuration file or settings dialog.
     namespace LightTheme
     {
         const wxColour COLOR_STRING(150, 0, 0);
@@ -80,6 +85,7 @@ namespace Constants
         const wxColour BACKGROUND(255, 255, 255); // white
         const wxColour FOREGROUND(0, 0, 0); // black
     }
+    //TODO: Investigate and implement the possibility of making theme settings dynamic and customizable with the use of a configuration file or settings dialog.
     namespace DarkTheme
     {
         const wxColour COLOR_STRING(139, 233, 253);
@@ -96,6 +102,7 @@ namespace Constants
         const wxColour BACKGROUND(40, 42, 54); // dark
         const wxColour FOREGROUND(248, 248, 242); //white
     }
+    //TODO: Document the ThemeSettings struct detailing the role of each color component in the application's UI.
     struct ThemeSettings
     {
         wxColour colorString;
@@ -112,6 +119,7 @@ namespace Constants
         wxColour background;
         wxColour foreground;
     };
+    //TODO: Refactor this function to handle more themes or make it more flexible to handle custom themes.
     inline ThemeSettings GetThemeSettings(bool isDarkMode)
     {
         if(!isDarkMode)
